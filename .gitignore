@@ -1,0 +1,64 @@
+# ── Python ──────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+*.so
+
+# ── Virtual environments ─────────────────────────────────────────────────────
+venv/
+.venv/
+env/
+.env/
+
+# ── Environment variables ────────────────────────────────────────────────────
+.env
+*.env
+
+# ── Database files ───────────────────────────────────────────────────────────
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# ── Generated index (rebuilt at runtime) ────────────────────────────────────
+app/data/index.pkl
+
+# ── pytest / coverage ────────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# ── mypy ────────────────────────────────────────────────────────────────────
+.mypy_cache/
+*.pyi
+
+# ── ruff / black ─────────────────────────────────────────────────────────────
+.ruff_cache/
+
+# ── Jupyter ──────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ── OS artefacts ─────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE ──────────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ── Alembic generated (keep migrations, ignore __pycache__ inside) ───────────
+alembic/__pycache__/
+alembic/versions/__pycache__/
+
+# ── Build / dist ─────────────────────────────────────────────────────────────
+build/
+dist/
+*.egg-info/

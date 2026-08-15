@@ -1,0 +1,22 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  requirements-dev.txt — Development / test dependencies
+#  Pinned versions from TECH_STACK.md §7
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Inherit all production deps
+-r requirements.txt
+
+# Testing
+pytest==8.3.2
+pytest-cov==5.0.0
+pytest-asyncio==0.23.8
+
+# Code quality (Phase 5 — installed now to allow pre-commit hooks)
+black==24.8.0
+ruff==0.5.7
+mypy==1.11.1
+pre-commit==3.8.0
+
+# Notebooks (optional — heavy; comment out if not needed)
+# jupyter==1.0.0
+# ipykernel==6.29.5
