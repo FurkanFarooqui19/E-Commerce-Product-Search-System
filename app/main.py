@@ -55,8 +55,11 @@ async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
     logger.info("Database tables verified / created.")
 
-    # Phase 2: IndexService.load_index() will be called here.
-    logger.info("Index service not yet initialised (Phase 2). Skipping index load.")
+    # Load index on startup
+    from app.services.index_service import IndexService
+    from app.database import SessionLocal
+    with SessionLocal() as db:
+        IndexService.load_index(db)
 
     logger.info("Application startup complete. Ready to serve requests.")
     yield
@@ -122,14 +125,20 @@ def health_check() -> dict:
     except Exception as exc:
         logger.warning("Health check DB ping failed: %s", exc)
 
+    from app.models.index import IndexStore
+    store = IndexStore()
+    
+    vocab_size = len(store.index) if store.is_ready else 0
+    doc_count = store.corpus_stats.total_documents if (store.is_ready and store.corpus_stats) else 0
+
     return {
-        "status": "healthy" if db_connected else "degraded",
+        "status": "healthy" if (db_connected and store.is_ready) else "degraded",
         "index": {
-            "ready": False,
-            "document_count": 0,
-            "vocabulary_size": 0,
-            "built_at": None,
-            "note": "Index will be built in Phase 2.",
+            "ready": store.is_ready,
+            "document_count": doc_count,
+            "vocabulary_size": vocab_size,
+            "built_at": None,  # Can add a timestamp if we start storing it in CorpusStats
+            "note": "Index loaded successfully." if store.is_ready else "Index not loaded.",
         },
         "database": {
             "connected": db_connected,
