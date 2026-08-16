@@ -35,42 +35,57 @@ def seed_db():
         session.commit()
 
         # Seed Products
-        for p_data in products_data:
-            if not session.get(Product, p_data['id']):
-                specs_data = p_data.pop('specifications', [])
-                # Convert ISO string if present or just let SQLAlchemy handle if it's already properly formatted or omitted for defaults.
-                # Actually, pop created_at if it's string to let db handle, or parse it.
-                if 'created_at' in p_data and isinstance(p_data['created_at'], str):
-                    from datetime import datetime
-                    p_data['created_at'] = datetime.fromisoformat(p_data['created_at'])
-                
+        for raw_product in products_data:
+            p_data = dict(raw_product)
+            specs_data = p_data.pop('specifications', [])
+
+            if 'created_at' in p_data and isinstance(p_data['created_at'], str):
+                from datetime import datetime
+                p_data['created_at'] = datetime.fromisoformat(p_data['created_at'])
+
+            existing = session.get(Product, p_data['id'])
+            if existing:
+                for key, value in p_data.items():
+                    setattr(existing, key, value)
+                prod = existing
+            else:
                 prod = Product(**p_data)
                 session.add(prod)
-                session.flush() # flush to assign prod.id just in case, though it's provided
-                
-                for spec in specs_data:
-                    session.add(ProductSpecification(
-                        product_id=prod.id,
-                        spec_key=spec['spec_key'],
-                        spec_value=spec['spec_value']
-                    ))
+                session.flush()
+
+            session.query(ProductSpecification).filter(
+                ProductSpecification.product_id == prod.id
+            ).delete(synchronize_session=False)
+            for spec in specs_data:
+                session.add(ProductSpecification(
+                    product_id=prod.id,
+                    spec_key=spec['spec_key'],
+                    spec_value=spec['spec_value']
+                ))
         
         session.commit()
         
         # Seed Evaluation Queries
-        for q_data in queries_data:
-            if not session.get(EvaluationQuery, q_data['id']):
-                judgments_data = q_data.pop('judgments', [])
-                query = EvaluationQuery(**q_data)
-                session.add(query)
-                session.flush()
-                
-                for j_data in judgments_data:
-                    session.add(RelevanceJudgment(
-                        query_id=query.id,
-                        product_id=j_data['product_id'],
-                        relevance=j_data['relevance']
-                    ))
+        # Keep DB evaluation set strictly synchronized with app/data/eval_queries.json
+        # to guarantee reproducible benchmarks (no stale rows, no duplicate leftovers).
+        session.query(RelevanceJudgment).delete(synchronize_session=False)
+        session.query(EvaluationQuery).delete(synchronize_session=False)
+        session.flush()
+
+        for raw_query in queries_data:
+            q_data = dict(raw_query)
+            judgments_data = q_data.pop('judgments', [])
+
+            query = EvaluationQuery(**q_data)
+            session.add(query)
+            session.flush()
+
+            for j_data in judgments_data:
+                session.add(RelevanceJudgment(
+                    query_id=query.id,
+                    product_id=j_data['product_id'],
+                    relevance=j_data['relevance']
+                ))
                     
         session.commit()
         print("Database seeding completed.")

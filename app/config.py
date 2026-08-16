@@ -60,6 +60,7 @@ FIELD_WEIGHTS: dict[str, float] = {
     "name": 3.0,
     "category": 2.0,
     "description": 1.5,
+    "specs": 1.0,
     "specifications": 1.0,
 }
 

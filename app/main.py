@@ -13,7 +13,7 @@ API_SPEC.md base URL: http://localhost:8000/api/v1
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import APP_VERSION, DEBUG
@@ -105,7 +105,7 @@ app.add_middleware(
     summary="Health check",
     response_description="System health status",
 )
-def health_check() -> dict:
+def health_check(response: Response) -> dict:
     """
     Returns the health status of the API, index, and database connection.
 
@@ -131,8 +131,12 @@ def health_check() -> dict:
     vocab_size = len(store.index) if store.is_ready else 0
     doc_count = store.corpus_stats.total_documents if (store.is_ready and store.corpus_stats) else 0
 
+    is_healthy = bool(db_connected and store.is_ready)
+    if not is_healthy:
+        response.status_code = 503
+
     return {
-        "status": "healthy" if (db_connected and store.is_ready) else "degraded",
+        "status": "healthy" if is_healthy else "degraded",
         "index": {
             "ready": store.is_ready,
             "document_count": doc_count,
@@ -149,10 +153,11 @@ def health_check() -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-#  Future routers (registered in Phase 3)
+#  Phase 3 routers — API_SPEC.md §4
 # ─────────────────────────────────────────────────────────────────────────────
-# from app.api.routes import search, products, categories, evaluation
-# app.include_router(search.router,     prefix="/api/v1")
-# app.include_router(products.router,   prefix="/api/v1")
-# app.include_router(categories.router, prefix="/api/v1")
-# app.include_router(evaluation.router, prefix="/api/v1")
+from app.api.routes import search, products, categories, evaluation  # noqa: E402
+
+app.include_router(search.router,     prefix="/api/v1")
+app.include_router(products.router,   prefix="/api/v1")
+app.include_router(categories.router, prefix="/api/v1")
+app.include_router(evaluation.router, prefix="/api/v1")
