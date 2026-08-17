@@ -122,6 +122,29 @@ Interactive Swagger API docs will be available at: **`http://localhost:8000/docs
 
 ---
 
+### Option C: Modern Frontend Dashboard (React + TypeScript + Tailwind)
+
+To start the interactive web UI:
+
+```bash
+# 1. Navigate to frontend directory
+cd frontend
+
+# 2. Install dependencies (Node 18+)
+npm install
+
+# 3. Start Vite dev server
+npm run dev
+```
+
+Open your browser at: **`http://localhost:5173`** to access:
+* **Product Search**: Real-time autocomplete, NL query parsing chips, price/category filters, and product detail modals.
+* **Algorithm Comparison**: 4-way side-by-side ranking matrix for Keyword, TF-IDF, BM25, and Hybrid.
+* **Evaluation Dashboard**: Cranfield benchmark runner with Precision@10, Recall@10, MRR, NDCG@10, and Recharts bar charts.
+* **Logs & Health**: Live query telemetry audit trail and index health monitor.
+
+---
+
 ## 3. Building and Managing the Index
 
 The inverted index is serialized to `app/data/index.pkl` and loaded into RAM on startup:
