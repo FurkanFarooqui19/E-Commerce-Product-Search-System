@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 from app.config import INDEX_PATH
 from app.models.index import IndexStore
 from app.engine.index_builder import IndexBuilder
-from app.models.product import Product
+from app.models.product import Category, Product
+from app.services.search_service import initialise_nl_parser
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +40,10 @@ class IndexService:
         store.corpus_stats = corpus_stats
         store.is_ready = True
 
+        # Initialise NLQueryParser with full category vocabulary.
+        _inject_nl_parser_categories(db)
+
+
     @staticmethod
     def load_index(db: Optional[Session] = None) -> None:
         """
@@ -69,6 +74,10 @@ class IndexService:
             store.corpus_stats = corpus_stats
             store.is_ready = True
             logger.info("Inverted index loaded successfully. Ready to serve requests.")
+
+            # Initialise NLQueryParser with full category vocabulary.
+            if db is not None:
+                _inject_nl_parser_categories(db)
         except Exception as e:
             logger.exception("Failed to load inverted index: %s", e)
             store.is_ready = False
@@ -77,3 +86,12 @@ class IndexService:
     def is_ready() -> bool:
         """Returns True if the index is loaded and ready in memory."""
         return IndexStore().is_ready
+
+
+def _inject_nl_parser_categories(db: Session) -> None:
+    """Load category names from the DB and pass them to the NLQueryParser."""
+    try:
+        names = [row.name for row in db.query(Category).all()]
+        initialise_nl_parser(names)
+    except Exception as exc:  # pragma: no cover
+        logger.warning("Could not initialise NL parser with category vocabulary: %s", exc)

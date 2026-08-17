@@ -19,9 +19,15 @@ from datetime import datetime
 
 from app.services.search_service import (
     SearchService,
-    _extract_price_from_query,
     _get_lowest_idf_token,
 )
+from app.engine.nl_parser import NLQueryParser
+
+
+def _extract(query: str):
+    """Helper: parse query and return (clean_query, min_price, max_price)."""
+    sq = NLQueryParser().parse(query)
+    return sq.clean_query, sq.min_price, sq.max_price
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -30,7 +36,7 @@ from app.services.search_service import (
 
 @pytest.mark.unit
 def test_extract_price_under():
-    clean, mn, mx = _extract_price_from_query("wireless headphones under 3000")
+    clean, mn, mx = _extract("wireless headphones under 3000")
     assert mx == pytest.approx(3000.0)
     assert mn is None
     assert "under" not in clean
@@ -39,28 +45,28 @@ def test_extract_price_under():
 
 @pytest.mark.unit
 def test_extract_price_below():
-    clean, mn, mx = _extract_price_from_query("laptop below 50000")
+    clean, mn, mx = _extract("laptop below 50000")
     assert mx == pytest.approx(50000.0)
     assert mn is None
 
 
 @pytest.mark.unit
 def test_extract_price_above():
-    clean, mn, mx = _extract_price_from_query("gaming headphones above 1000")
+    clean, mn, mx = _extract("gaming headphones above 1000")
     assert mn == pytest.approx(1000.0)
     assert mx is None
 
 
 @pytest.mark.unit
 def test_extract_price_between():
-    clean, mn, mx = _extract_price_from_query("laptop between 30000 and 70000")
+    clean, mn, mx = _extract("laptop between 30000 and 70000")
     assert mn == pytest.approx(30000.0)
     assert mx == pytest.approx(70000.0)
 
 
 @pytest.mark.unit
 def test_extract_price_no_price():
-    clean, mn, mx = _extract_price_from_query("wireless headphones")
+    clean, mn, mx = _extract("wireless headphones")
     assert clean == "wireless headphones"
     assert mn is None
     assert mx is None
@@ -68,13 +74,13 @@ def test_extract_price_no_price():
 
 @pytest.mark.unit
 def test_extract_price_less_than():
-    clean, mn, mx = _extract_price_from_query("shoes less than 2000")
+    clean, mn, mx = _extract("shoes less than 2000")
     assert mx == pytest.approx(2000.0)
 
 
 @pytest.mark.unit
 def test_extract_price_more_than():
-    clean, mn, mx = _extract_price_from_query("laptop more than 40000")
+    clean, mn, mx = _extract("laptop more than 40000")
     assert mn == pytest.approx(40000.0)
 
 

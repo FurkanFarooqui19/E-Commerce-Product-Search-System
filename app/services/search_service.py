@@ -23,7 +23,6 @@ Pipeline order (SEARCH_ENGINE_SPEC.md §1, ARCHITECTURE.md §4.3):
 from __future__ import annotations
 
 import logging
-import re
 import time
 from typing import Optional
 
@@ -37,6 +36,7 @@ from app.config import (
 from app.engine.bm25_ranker import BM25Ranker
 from app.engine.filter_engine import FilterEngine
 from app.engine.keyword_ranker import KeywordRanker
+from app.engine.nl_parser import NLQueryParser
 from app.engine.preprocessor import QueryPreprocessor
 from app.engine.result_fusion import ResultFusion
 from app.engine.tfidf_ranker import TFIDFRanker
@@ -45,49 +45,24 @@ from app.services.product_service import ProductService
 
 logger = logging.getLogger(__name__)
 
-# Pre-compiled price-extraction patterns (SEARCH_ENGINE_SPEC.md §8.3)
-_PRICE_PATTERNS = [
-    (re.compile(r"under\s+(\d+(?:\.\d+)?)", re.IGNORECASE), "max_price"),
-    (re.compile(r"below\s+(\d+(?:\.\d+)?)", re.IGNORECASE), "max_price"),
-    (re.compile(r"less\s+than\s+(\d+(?:\.\d+)?)", re.IGNORECASE), "max_price"),
-    (re.compile(r"above\s+(\d+(?:\.\d+)?)", re.IGNORECASE), "min_price"),
-    (re.compile(r"over\s+(\d+(?:\.\d+)?)", re.IGNORECASE), "min_price"),
-    (re.compile(r"more\s+than\s+(\d+(?:\.\d+)?)", re.IGNORECASE), "min_price"),
-]
-_PRICE_RANGE_PATTERN = re.compile(
-    r"between\s+(\d+(?:\.\d+)?)\s+and\s+(\d+(?:\.\d+)?)", re.IGNORECASE
-)
+# ─────────────────────────────────────────────────────────────────────────────
+#  Module-level NLQueryParser singleton
+#  Initialised with no category vocabulary; call initialise_nl_parser() once
+#  category names are available (done by IndexService after loading the index).
+# ─────────────────────────────────────────────────────────────────────────────
+_nl_parser: NLQueryParser = NLQueryParser()
 
 
-def _extract_price_from_query(query: str) -> tuple[str, Optional[float], Optional[float]]:
+def initialise_nl_parser(category_names: list[str]) -> None:
+    """Re-build the NLQueryParser with the full category vocabulary.
+
+    Called once by IndexService after the index and DB categories are loaded.
+    SEARCH_ENGINE_SPEC.md §8.3 — Category vocabulary matching.
     """
-    Extract price constraints from the raw query string.
-    Returns (clean_query, min_price, max_price).
-    Removes price phrases from query so they don't pollute token matching.
-    """
-    clean = query
-    min_price: Optional[float] = None
-    max_price: Optional[float] = None
+    global _nl_parser
+    _nl_parser = NLQueryParser(category_names=category_names)
+    logger.info("NLQueryParser initialised with %d category names.", len(category_names))
 
-    # Check range first (more specific)
-    m = _PRICE_RANGE_PATTERN.search(clean)
-    if m:
-        min_price = float(m.group(1))
-        max_price = float(m.group(2))
-        clean = clean[: m.start()] + clean[m.end() :]
-
-    # Single-sided patterns
-    for pattern, field in _PRICE_PATTERNS:
-        m = pattern.search(clean)
-        if m:
-            val = float(m.group(1))
-            if field == "max_price" and max_price is None:
-                max_price = val
-            elif field == "min_price" and min_price is None:
-                min_price = val
-            clean = clean[: m.start()] + clean[m.end() :]
-
-    return clean.strip(), min_price, max_price
 
 
 def _select_ranker(mode: str):
@@ -150,14 +125,23 @@ class SearchService:
         if not store.is_ready:
             raise RuntimeError("INDEX_NOT_READY")
 
-        # ── Step 1: Inline NL price extraction ────────────────────────────
-        clean_query, nl_min, nl_max = _extract_price_from_query(q)
+        # ── Step 1: NL Query Parser (price + category hint) ───────────────
+        sq = _nl_parser.parse(q)
 
         # Explicit API params take precedence over NL-extracted values
-        eff_min = min_price if min_price is not None else nl_min
-        eff_max = max_price if max_price is not None else nl_max
+        # (SEARCH_ENGINE_SPEC.md §8.5)
+        eff_min = min_price if min_price is not None else sq.min_price
+        eff_max = max_price if max_price is not None else sq.max_price
 
-        nl_extracted = {"min_price": nl_min, "max_price": nl_max, "category_hint": None}
+        # Category hint augments (does not replace) an explicit category param.
+        eff_category = category if category is not None else sq.category_hint
+
+        clean_query = sq.clean_query
+        nl_extracted = {
+            "min_price": sq.min_price,
+            "max_price": sq.max_price,
+            "category_hint": sq.category_hint,
+        }
 
         # ── Step 2: Preprocess query ───────────────────────────────────────
         tokens = cls._preprocessor.process(clean_query)
@@ -184,7 +168,7 @@ class SearchService:
             cls._filter_and_rank_with_fallback(
                 tokens=tokens,
                 mode=mode,
-                category=category,
+                category=eff_category,
                 min_price=eff_min,
                 max_price=eff_max,
                 store=store,
@@ -228,6 +212,7 @@ class SearchService:
                 },
                 "nl_extracted": nl_extracted,
             },
+
             "results": results,
             "pagination": {
                 "page": page,
@@ -374,12 +359,13 @@ class SearchService:
         if not store.is_ready:
             raise RuntimeError("INDEX_NOT_READY")
 
-        clean_query, nl_min, nl_max = _extract_price_from_query(q)
-        eff_min = min_price if min_price is not None else nl_min
-        eff_max = max_price if max_price is not None else nl_max
+        sq = _nl_parser.parse(q)
+        eff_min = min_price if min_price is not None else sq.min_price
+        eff_max = max_price if max_price is not None else sq.max_price
+        eff_category = category if category is not None else sq.category_hint
 
-        tokens = cls._preprocessor.process(clean_query)
-        candidates = FilterEngine.get_candidate_ids(category, eff_min, eff_max, db)
+        tokens = cls._preprocessor.process(sq.clean_query)
+        candidates = FilterEngine.get_candidate_ids(eff_category, eff_min, eff_max, db)
 
         results: dict[str, list] = {}
         latency_ms: dict[str, float] = {}

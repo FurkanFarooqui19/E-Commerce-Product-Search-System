@@ -117,3 +117,67 @@ def test_health_endpoint_degraded_when_index_not_ready(client):
     finally:
         store.is_ready = True
 
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  NL Query Parser integration tests (DEVELOPMENT_PLAN.md §4.1)
+# ─────────────────────────────────────────────────────────────────────────────
+
+@pytest.mark.integration
+def test_nl_parser_auto_applies_max_price(client):
+    """
+    DEVELOPMENT_PLAN.md §4.1 integration test:
+    'wireless headphones under 2000' must automatically apply max_price=2000
+    without the caller passing an explicit max_price parameter.
+
+    Verified:
+    - NL parser populates nl_extracted.max_price = 2000.
+    - The extracted price is applied to filters_applied.max_price.
+    - If no fallback fired, every returned product respects the price limit.
+      (Per SEARCH_ENGINE_SPEC.md §11.1, the fallback may relax price when zero
+       products exist under the limit — that is expected and correct behaviour.)
+    """
+    response = client.get("/api/v1/search?q=wireless+headphones+under+2000&mode=bm25")
+    assert response.status_code == 200
+    data = response.json()
+
+    # NL parser must have extracted max_price
+    nl = data["query"]["nl_extracted"]
+    assert nl["max_price"] == pytest.approx(2000.0), (
+        "NL parser did not extract max_price=2000 from 'under 2000'"
+    )
+
+    # The extracted value must have been applied as a filter
+    applied = data["query"]["filters_applied"]
+    assert applied["max_price"] == pytest.approx(2000.0), (
+        "Extracted max_price was not forwarded to filters_applied"
+    )
+
+    # If no fallback was triggered, every result must respect the price cap
+    if not data["metadata"]["fallback_applied"]:
+        for item in data["results"]:
+            price = item["product"]["price"]
+            assert price <= 2000.0, (
+                f"Product id={item['product']['id']} price={price} violates max_price=2000 "
+                f"(no fallback was applied)"
+            )
+
+
+@pytest.mark.integration
+def test_nl_parser_category_hint_filters_results(client):
+    """
+    Category hint from NL parser augments the candidate set:
+    'electronics under 5000' returns only Electronics-category products
+    priced <= 5000, without explicit category= or max_price= params.
+    """
+    response = client.get("/api/v1/search?q=electronics+under+5000&mode=bm25")
+    assert response.status_code == 200
+    data = response.json()
+
+    nl = data["query"]["nl_extracted"]
+    assert nl["max_price"] == pytest.approx(5000.0)
+    assert nl["category_hint"] is not None
+
+    assert len(data["results"]) > 0
+    for item in data["results"]:
+        assert item["product"]["price"] <= 5000.0
+        assert "Electronics" in item["product"]["category"]
