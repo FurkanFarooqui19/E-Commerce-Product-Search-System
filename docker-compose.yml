@@ -1,0 +1,53 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# docker-compose.yml — E-Commerce Product Search System
+# Reference: TECH_STACK.md §6.1, DEVELOPMENT_PLAN.md §5.1
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ecommerce-search-api
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=development
+      - DEBUG=true
+      - HOST=0.0.0.0
+      - PORT=8000
+      - DATABASE_URL=sqlite:///./app/data/products.db
+    volumes:
+      - ./app/data:/app/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+  # Optional PostgreSQL service for production profile (DEVELOPMENT_PLAN.md §5.1)
+  # Run with: docker compose --profile postgres up
+  db:
+    image: postgres:16-alpine
+    container_name: ecommerce-search-db
+    profiles:
+      - postgres
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=ecommerce_search
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d ecommerce_search"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
