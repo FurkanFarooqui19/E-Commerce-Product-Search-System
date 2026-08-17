@@ -216,3 +216,59 @@ def test_search_compare_validation_errors(client):
     assert res_price.status_code == 400
     assert res_price.json()["detail"]["error"]["code"] == "INVALID_PRICE_RANGE"
 
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  Query Suggestions / Autocomplete (DEVELOPMENT_PLAN.md §4.4)
+# ─────────────────────────────────────────────────────────────────────────────
+
+@pytest.mark.integration
+def test_search_suggest_wire(client):
+    """
+    DEVELOPMENT_PLAN.md §4.4:
+    GET /api/v1/search/suggest?q=wire returns top 5 matching product name prefixes.
+    """
+    response = client.get("/api/v1/search/suggest?q=wire")
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["query"] == "wire"
+    assert "suggestions" in data
+    assert isinstance(data["suggestions"], list)
+    assert len(data["suggestions"]) > 0
+    assert "wireless" in data["suggestions"]
+    assert data["total"] == len(data["suggestions"])
+
+
+@pytest.mark.integration
+def test_search_suggest_empty_query(client):
+    """Empty query prefix returns 200 with empty suggestions."""
+    response = client.get("/api/v1/search/suggest?q=")
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["query"] == ""
+    assert data["suggestions"] == []
+    assert data["total"] == 0
+
+
+@pytest.mark.integration
+def test_search_suggest_limit_param(client):
+    """limit parameter restricts the number of returned suggestions."""
+    response = client.get("/api/v1/search/suggest?q=s&limit=2")
+    assert response.status_code == 200
+    data = response.json()
+
+    assert len(data["suggestions"]) <= 2
+    assert data["total"] == len(data["suggestions"])
+
+
+@pytest.mark.integration
+def test_search_suggest_no_matches(client):
+    """Query with no vocabulary match returns empty list."""
+    response = client.get("/api/v1/search/suggest?q=nonexistentprefix999")
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["suggestions"] == []
+    assert data["total"] == 0
+

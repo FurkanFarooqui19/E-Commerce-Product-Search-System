@@ -19,9 +19,11 @@ from app.api.schemas.response import (
     CompareResponse,
     CompareResultItem,
     SearchResponse,
+    SuggestResponse,
 )
 from app.config import DEFAULT_SEARCH_MODE, MAX_PAGE_SIZE, VALID_SEARCH_MODES
 from app.database import get_db
+from app.engine.suggest import get_suggestions
 from app.models.index import IndexStore
 from app.services.search_service import SearchService
 
@@ -221,6 +223,33 @@ def search_compare(
     )
 
     return raw
+
+
+@router.get(
+    "/search/suggest",
+    response_model=SuggestResponse,
+    summary="Query suggestions / autocomplete",
+    description="Returns top matching product name prefixes from the index vocabulary.",
+)
+def search_suggest(
+    q: str = Query(default="", max_length=100, description="Query prefix to complete"),
+    limit: int = Query(default=5, ge=1, le=20, description="Maximum number of suggestions to return"),
+):
+    _require_index()
+
+    if not q.strip():
+        return {
+            "query": q,
+            "suggestions": [],
+            "total": 0,
+        }
+
+    suggestions = get_suggestions(prefix=q, top_n=limit)
+    return {
+        "query": q,
+        "suggestions": suggestions,
+        "total": len(suggestions),
+    }
 
 
 # ─────────────────────────────────────────────────────────────────────────────
