@@ -153,11 +153,12 @@ def health_check(response: Response) -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-#  Phase 3 routers — API_SPEC.md §4
+#  Phase 3 / Phase 4 routers — API_SPEC.md §4, DEVELOPMENT_PLAN.md §4.3
 # ─────────────────────────────────────────────────────────────────────────────
-from app.api.routes import search, products, categories, evaluation  # noqa: E402
+from app.api.routes import admin, search, products, categories, evaluation  # noqa: E402
 
 app.include_router(search.router,     prefix="/api/v1")
 app.include_router(products.router,   prefix="/api/v1")
 app.include_router(categories.router, prefix="/api/v1")
 app.include_router(evaluation.router, prefix="/api/v1")
+app.include_router(admin.router,      prefix="/api/v1")

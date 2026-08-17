@@ -43,6 +43,7 @@ from app.engine.preprocessor import QueryPreprocessor
 from app.engine.result_fusion import ResultFusion
 from app.engine.tfidf_ranker import TFIDFRanker
 from app.models.index import IndexStore
+from app.services.log_service import SearchLogService
 from app.services.product_service import ProductService
 
 logger = logging.getLogger(__name__)
@@ -211,6 +212,19 @@ class SearchService:
 
         latency_ms = (time.perf_counter() - t_start) * 1000
         total_pages = max(1, -(-total_candidates // page_size)) if total_candidates else 0
+
+        # ── Step 10: Best-effort search logging (DEVELOPMENT_PLAN.md §4.3) ──
+        SearchLogService.log(
+            db=db,
+            query_text=q,
+            mode=mode,
+            category=used_category,
+            min_price=eff_min,
+            max_price=eff_max,
+            result_count=total_candidates,
+            latency_ms=latency_ms,
+            fallback=fallback_applied,
+        )
 
         return {
             "query": {
