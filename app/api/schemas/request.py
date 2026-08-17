@@ -25,6 +25,7 @@ from app.config import (
 #  Search
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class SearchRequest(BaseModel):
     """
     Query parameters for GET /api/v1/search.
@@ -33,11 +34,22 @@ class SearchRequest(BaseModel):
 
     q: str = Field(..., min_length=1, max_length=500, description="Search query")
     mode: str = Field(default=DEFAULT_SEARCH_MODE, description="Ranking algorithm")
-    category: Optional[str] = Field(default=None, max_length=100, description="Category filter")
-    min_price: Optional[float] = Field(default=None, ge=0.0, description="Minimum price (inclusive)")
-    max_price: Optional[float] = Field(default=None, ge=0.0, description="Maximum price (inclusive)")
+    category: Optional[str] = Field(
+        default=None, max_length=100, description="Category filter"
+    )
+    min_price: Optional[float] = Field(
+        default=None, ge=0.0, description="Minimum price (inclusive)"
+    )
+    max_price: Optional[float] = Field(
+        default=None, ge=0.0, description="Maximum price (inclusive)"
+    )
     page: int = Field(default=1, ge=1, description="Page number (1-indexed)")
-    page_size: int = Field(default=DEFAULT_PAGE_SIZE, ge=1, le=MAX_PAGE_SIZE, description="Results per page")
+    page_size: int = Field(
+        default=DEFAULT_PAGE_SIZE,
+        ge=1,
+        le=MAX_PAGE_SIZE,
+        description="Results per page",
+    )
 
     @model_validator(mode="after")
     def validate_price_range(self) -> "SearchRequest":
@@ -62,7 +74,9 @@ class CompareRequest(BaseModel):
     """
 
     q: str = Field(..., min_length=1, max_length=500)
-    modes: str = Field(default="keyword,tfidf,bm25", description="Comma-separated modes")
+    modes: str = Field(
+        default="keyword,tfidf,bm25", description="Comma-separated modes"
+    )
     top_k: int = Field(default=10, ge=1, le=MAX_PAGE_SIZE)
     category: Optional[str] = Field(default=None, max_length=100)
     min_price: Optional[float] = Field(default=None, ge=0.0)
@@ -81,8 +95,10 @@ class CompareRequest(BaseModel):
 #  Evaluation
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class GradedJudgment(BaseModel):
     """Single graded relevance judgment for NDCG computation."""
+
     product_id: int
     relevance: int = Field(..., ge=0, le=3)
 
@@ -92,6 +108,7 @@ class InlineQuery(BaseModel):
     Inline query with relevance judgments, used when query_set_id is null.
     API_SPEC.md §4.4
     """
+
     query_text: str = Field(..., min_length=1)
     relevant_product_ids: list[int] = Field(default_factory=list)
     graded_judgments: list[GradedJudgment] = Field(default_factory=list)
@@ -99,6 +116,7 @@ class InlineQuery(BaseModel):
 
 class EvaluationFilters(BaseModel):
     """Optional filters applied to every evaluation query."""
+
     category: Optional[str] = None
     min_price: Optional[float] = Field(default=None, ge=0.0)
     max_price: Optional[float] = Field(default=None, ge=0.0)
@@ -109,6 +127,7 @@ class EvaluationRequest(BaseModel):
     Request body for POST /api/v1/evaluate.
     API_SPEC.md §4.4
     """
+
     query_set_id: Optional[int] = None
     queries: list[InlineQuery] = Field(default_factory=list)
     modes: list[str] = Field(default=["keyword", "tfidf", "bm25"])

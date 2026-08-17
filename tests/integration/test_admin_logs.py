@@ -32,6 +32,7 @@ def client():
 #  1. GET /api/v1/admin/logs — basic shape
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @pytest.mark.integration
 def test_admin_logs_returns_200(client):
     """GET /api/v1/admin/logs returns 200 with expected schema."""
@@ -56,6 +57,7 @@ def test_admin_logs_returns_200(client):
 #  2. Search then verify log row appears in /admin/logs
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @pytest.mark.integration
 def test_search_persists_log_entry(client):
     """
@@ -75,7 +77,9 @@ def test_search_persists_log_entry(client):
     assert logs_resp.status_code == 200
     data = logs_resp.json()
 
-    assert data["pagination"]["total_results"] > 0, "At least one log row must exist after a search"
+    assert (
+        data["pagination"]["total_results"] > 0
+    ), "At least one log row must exist after a search"
 
     # The most-recent entry must match the query we just ran
     latest = data["logs"][0]
@@ -90,12 +94,15 @@ def test_search_persists_log_entry(client):
 #  3. Log entry fields match the search request parameters
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @pytest.mark.integration
 def test_log_entry_fields_match_search_request(client):
     """
     Logged values for mode, category, max_price must match the request params.
     """
-    client.get("/api/v1/search?q=gaming+mouse&mode=keyword&category=Electronics&max_price=5000")
+    client.get(
+        "/api/v1/search?q=gaming+mouse&mode=keyword&category=Electronics&max_price=5000"
+    )
 
     logs_resp = client.get("/api/v1/admin/logs?page=1&page_size=5")
     latest = logs_resp.json()["logs"][0]
@@ -108,6 +115,7 @@ def test_log_entry_fields_match_search_request(client):
 # ─────────────────────────────────────────────────────────────────────────────
 #  4. mode filter returns only matching logs
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.integration
 def test_admin_logs_mode_filter(client):
@@ -123,14 +131,15 @@ def test_admin_logs_mode_filter(client):
 
     assert data["pagination"]["total_results"] >= 1
     for entry in data["logs"]:
-        assert entry["mode"] == "tfidf", (
-            f"mode filter returned entry with mode={entry['mode']!r}"
-        )
+        assert (
+            entry["mode"] == "tfidf"
+        ), f"mode filter returned entry with mode={entry['mode']!r}"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  5. Pagination metadata is consistent
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.integration
 def test_admin_logs_pagination(client):
@@ -157,6 +166,7 @@ def test_admin_logs_pagination(client):
 # ─────────────────────────────────────────────────────────────────────────────
 #  6. Search is unaffected even when viewed alongside logging
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.integration
 def test_search_succeeds_independent_of_logging(client):

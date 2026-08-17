@@ -11,6 +11,7 @@ from app.services.search_service import initialise_nl_parser
 
 logger = logging.getLogger(__name__)
 
+
 class IndexService:
     @staticmethod
     def build_index(db: Session) -> None:
@@ -20,20 +21,20 @@ class IndexService:
         """
         logger.info("Building inverted index from database...")
         # Get active products with categories and specifications eagerly loaded to avoid N+1 queries
-        products = db.query(Product).filter(Product.is_active == True).all()
-        
+        products = db.query(Product).filter(Product.is_active).all()
+
         builder = IndexBuilder()
         index, corpus_stats = builder.build(products)
-        
+
         # Ensure target directory exists
         os.makedirs(os.path.dirname(INDEX_PATH), exist_ok=True)
-        
+
         # Serialize to pickle
         with open(INDEX_PATH, "wb") as f:
             pickle.dump((index, corpus_stats), f, protocol=pickle.HIGHEST_PROTOCOL)
-            
+
         logger.info("Inverted index successfully built and saved to %s", INDEX_PATH)
-        
+
         # Update the IndexStore singleton
         store = IndexStore()
         store.index = index
@@ -42,7 +43,6 @@ class IndexService:
 
         # Initialise NLQueryParser with full category vocabulary.
         _inject_nl_parser_categories(db)
-
 
     @staticmethod
     def load_index(db: Optional[Session] = None) -> None:
@@ -57,7 +57,10 @@ class IndexService:
                 IndexService.build_index(db)
                 return
             else:
-                logger.error("Index file %s not found and no database session provided.", INDEX_PATH)
+                logger.error(
+                    "Index file %s not found and no database session provided.",
+                    INDEX_PATH,
+                )
                 store.is_ready = False
                 return
 
@@ -65,11 +68,11 @@ class IndexService:
         try:
             with open(INDEX_PATH, "rb") as f:
                 index, corpus_stats = pickle.load(f)
-            
+
             # Simple validation
             if not isinstance(index, dict) or corpus_stats is None:
                 raise ValueError("Invalid index file format.")
-                
+
             store.index = index
             store.corpus_stats = corpus_stats
             store.is_ready = True
@@ -94,4 +97,6 @@ def _inject_nl_parser_categories(db: Session) -> None:
         names = [row.name for row in db.query(Category).all()]
         initialise_nl_parser(names)
     except Exception as exc:  # pragma: no cover
-        logger.warning("Could not initialise NL parser with category vocabulary: %s", exc)
+        logger.warning(
+            "Could not initialise NL parser with category vocabulary: %s", exc
+        )

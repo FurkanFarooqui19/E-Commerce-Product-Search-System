@@ -46,6 +46,7 @@ def bare_parser():
 #  1. StructuredQuery shape
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @pytest.mark.unit
 def test_returns_structured_query(parser):
     """parse() returns a StructuredQuery dataclass."""
@@ -57,6 +58,7 @@ def test_returns_structured_query(parser):
 # ─────────────────────────────────────────────────────────────────────────────
 #  2. Price extraction — max_price patterns
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.unit
 def test_price_under(parser):
@@ -86,6 +88,7 @@ def test_price_less_than(parser):
 #  3. Price extraction — min_price patterns
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @pytest.mark.unit
 def test_price_above(parser):
     """'above 500' → min_price=500."""
@@ -114,6 +117,7 @@ def test_price_more_than(parser):
 #  4. Price extraction — range pattern
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @pytest.mark.unit
 def test_price_between(parser):
     """'between 1000 and 5000' → min_price=1000, max_price=5000."""
@@ -137,6 +141,7 @@ def test_price_between_range_takes_priority_over_single(parser):
 #  5. Decimal prices
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @pytest.mark.unit
 def test_decimal_price(parser):
     """Decimal prices like '999.99' are extracted correctly."""
@@ -147,6 +152,7 @@ def test_decimal_price(parser):
 # ─────────────────────────────────────────────────────────────────────────────
 #  6. clean_query — price phrases removed
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.unit
 def test_clean_query_removes_price_phrase(parser):
@@ -180,6 +186,7 @@ def test_clean_query_multiword_pattern(parser):
 # ─────────────────────────────────────────────────────────────────────────────
 #  7. Category vocabulary matching
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.unit
 def test_category_hint_electronics(parser):
@@ -234,6 +241,7 @@ def test_category_hint_with_no_vocabulary(bare_parser):
 #  8. raw_query preserved
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @pytest.mark.unit
 def test_raw_query_preserved(parser):
     """raw_query is always identical to the input string."""
@@ -245,6 +253,7 @@ def test_raw_query_preserved(parser):
 # ─────────────────────────────────────────────────────────────────────────────
 #  9. Case-insensitivity
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.unit
 def test_price_pattern_case_insensitive(parser):
@@ -258,6 +267,7 @@ def test_price_pattern_case_insensitive(parser):
 # ─────────────────────────────────────────────────────────────────────────────
 #  10. No price in query
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.unit
 def test_no_price_returns_none(parser):

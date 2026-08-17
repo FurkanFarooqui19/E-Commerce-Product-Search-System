@@ -15,7 +15,6 @@ from sqlalchemy.orm import Session
 
 from app.api.schemas.response import (
     CategoryListResponse,
-    CategoryResponse,
     SingleCategoryResponse,
 )
 from app.database import get_db

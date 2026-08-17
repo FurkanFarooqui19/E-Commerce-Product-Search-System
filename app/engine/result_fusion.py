@@ -4,7 +4,9 @@ class ResultFusion:
         scored_results: list[tuple[int, float]],
         query_tokens: list[str],
         index: dict,
-        product_metadata: dict[int, dict]  # {doc_id: {"price": float, "created_at": datetime}}
+        product_metadata: dict[
+            int, dict
+        ],  # {doc_id: {"price": float, "created_at": datetime}}
     ) -> list[tuple[int, float]]:
         """
         Applies min-max score normalization and tie-breaking to sort scored results.
@@ -36,14 +38,18 @@ class ResultFusion:
 
             # Check if any query token matched the 'name' field
             name_match = any(
-                token in index and
-                doc_id in index[token].postings and
-                index[token].postings[doc_id].fields.get("name", 0) > 0
+                token in index
+                and doc_id in index[token].postings
+                and index[token].postings[doc_id].fields.get("name", 0) > 0
                 for token in query_tokens
             )
 
             # Get timestamp for date comparison
-            ts = created_at.timestamp() if (created_at and hasattr(created_at, "timestamp")) else 0.0
+            ts = (
+                created_at.timestamp()
+                if (created_at and hasattr(created_at, "timestamp"))
+                else 0.0
+            )
 
             # Python sorts ascending. We negate descending criteria.
             return (-norm_score, -1 if name_match else 0, price, -ts)

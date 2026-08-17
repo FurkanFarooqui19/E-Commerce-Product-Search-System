@@ -12,7 +12,7 @@ Covers (DEVELOPMENT_PLAN.md §4.3):
 from __future__ import annotations
 
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from app.services.log_service import SearchLogService
 
@@ -20,6 +20,7 @@ from app.services.log_service import SearchLogService
 # ─────────────────────────────────────────────────────────────────────────────
 #  Helpers
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def _make_db_mock():
     """Return a MagicMock that passes isinstance(db, Session)-style checks."""
@@ -29,6 +30,7 @@ def _make_db_mock():
 # ─────────────────────────────────────────────────────────────────────────────
 #  1. log() — happy path: correct fields written
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.unit
 def test_log_adds_and_commits(monkeypatch):
@@ -67,9 +69,15 @@ def test_log_rounds_latency_to_two_decimals():
     """latency_ms is rounded to 2 dp before storage."""
     db = _make_db_mock()
     SearchLogService.log(
-        db=db, query_text="q", mode="keyword", category=None,
-        min_price=None, max_price=None, result_count=0,
-        latency_ms=7.123456789, fallback=False,
+        db=db,
+        query_text="q",
+        mode="keyword",
+        category=None,
+        min_price=None,
+        max_price=None,
+        result_count=0,
+        latency_ms=7.123456789,
+        fallback=False,
     )
     added_obj = db.add.call_args[0][0]
     assert added_obj.latency_ms == pytest.approx(7.12, abs=0.01)
@@ -80,9 +88,15 @@ def test_log_accepts_optional_none_fields():
     """category, min_price, max_price may all be None."""
     db = _make_db_mock()
     SearchLogService.log(
-        db=db, query_text="q", mode="tfidf", category=None,
-        min_price=None, max_price=None, result_count=5,
-        latency_ms=10.0, fallback=False,
+        db=db,
+        query_text="q",
+        mode="tfidf",
+        category=None,
+        min_price=None,
+        max_price=None,
+        result_count=5,
+        latency_ms=10.0,
+        fallback=False,
     )
     added_obj = db.add.call_args[0][0]
     assert added_obj.category is None
@@ -95,9 +109,15 @@ def test_log_fallback_true_persisted():
     """fallback=True is stored correctly."""
     db = _make_db_mock()
     SearchLogService.log(
-        db=db, query_text="q", mode="bm25", category=None,
-        min_price=None, max_price=None, result_count=0,
-        latency_ms=5.0, fallback=True,
+        db=db,
+        query_text="q",
+        mode="bm25",
+        category=None,
+        min_price=None,
+        max_price=None,
+        result_count=0,
+        latency_ms=5.0,
+        fallback=True,
     )
     added_obj = db.add.call_args[0][0]
     assert added_obj.fallback is True
@@ -106,6 +126,7 @@ def test_log_fallback_true_persisted():
 # ─────────────────────────────────────────────────────────────────────────────
 #  2. log() — best-effort: DB error is silenced
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.unit
 def test_log_swallows_db_exception():
@@ -119,12 +140,20 @@ def test_log_swallows_db_exception():
     # Must not raise — this is the best-effort guarantee
     try:
         SearchLogService.log(
-            db=db, query_text="q", mode="bm25", category=None,
-            min_price=None, max_price=None, result_count=0,
-            latency_ms=1.0, fallback=False,
+            db=db,
+            query_text="q",
+            mode="bm25",
+            category=None,
+            min_price=None,
+            max_price=None,
+            result_count=0,
+            latency_ms=1.0,
+            fallback=False,
         )
     except Exception as exc:
-        pytest.fail(f"log() raised an exception when it should have swallowed it: {exc}")
+        pytest.fail(
+            f"log() raised an exception when it should have swallowed it: {exc}"
+        )
 
     # Rollback should have been called after the error
     db.rollback.assert_called_once()
@@ -138,9 +167,15 @@ def test_log_swallows_add_exception():
 
     try:
         SearchLogService.log(
-            db=db, query_text="q", mode="tfidf", category=None,
-            min_price=None, max_price=None, result_count=3,
-            latency_ms=2.0, fallback=False,
+            db=db,
+            query_text="q",
+            mode="tfidf",
+            category=None,
+            min_price=None,
+            max_price=None,
+            result_count=3,
+            latency_ms=2.0,
+            fallback=False,
         )
     except Exception as exc:
         pytest.fail(f"log() raised an exception: {exc}")

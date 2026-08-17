@@ -19,12 +19,13 @@ from typing import Optional
 #  StructuredQuery dataclass (SEARCH_ENGINE_SPEC.md §8.4)
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @dataclass
 class StructuredQuery:
     """Output of NLQueryParser.parse()."""
 
     raw_query: str
-    clean_query: str            # raw_query with extracted price phrases removed
+    clean_query: str  # raw_query with extracted price phrases removed
     min_price: Optional[float]
     max_price: Optional[float]
     category_hint: Optional[str]  # matched category name or None
@@ -55,6 +56,7 @@ _PRICE_PATTERNS: list[tuple[re.Pattern, str]] = [
 # ─────────────────────────────────────────────────────────────────────────────
 #  NLQueryParser
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class NLQueryParser:
     """

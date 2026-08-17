@@ -13,7 +13,7 @@ Per DEVELOPMENT_PLAN.md §1.2:
 """
 
 import pytest
-from sqlalchemy import create_engine, inspect, text
+from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import Session
 
 from app.database import Base
@@ -57,9 +57,9 @@ def test_all_tables_created(in_memory_engine):
     """All tables defined in DATABASE.md §3 must exist after create_all."""
     inspector = inspect(in_memory_engine)
     actual_tables = set(inspector.get_table_names())
-    assert EXPECTED_TABLES.issubset(actual_tables), (
-        f"Missing tables: {EXPECTED_TABLES - actual_tables}"
-    )
+    assert EXPECTED_TABLES.issubset(
+        actual_tables
+    ), f"Missing tables: {EXPECTED_TABLES - actual_tables}"
 
 
 @pytest.mark.unit
@@ -67,7 +67,9 @@ def test_categories_columns(in_memory_engine):
     """categories table has all expected columns."""
     inspector = inspect(in_memory_engine)
     col_names = {c["name"] for c in inspector.get_columns("categories")}
-    assert {"id", "name", "slug", "description", "parent_id", "created_at"}.issubset(col_names)
+    assert {"id", "name", "slug", "description", "parent_id", "created_at"}.issubset(
+        col_names
+    )
 
 
 @pytest.mark.unit
@@ -76,9 +78,18 @@ def test_products_columns(in_memory_engine):
     inspector = inspect(in_memory_engine)
     col_names = {c["name"] for c in inspector.get_columns("products")}
     assert {
-        "id", "category_id", "name", "description", "brand",
-        "price", "stock", "rating", "image_url", "is_active",
-        "created_at", "updated_at",
+        "id",
+        "category_id",
+        "name",
+        "description",
+        "brand",
+        "price",
+        "stock",
+        "rating",
+        "image_url",
+        "is_active",
+        "created_at",
+        "updated_at",
     }.issubset(col_names)
 
 
@@ -95,7 +106,15 @@ def test_evaluation_queries_columns(in_memory_engine):
     """evaluation_queries table has all expected columns."""
     inspector = inspect(in_memory_engine)
     col_names = {c["name"] for c in inspector.get_columns("evaluation_queries")}
-    assert {"id", "query_text", "category", "min_price", "max_price", "notes", "created_at"}.issubset(col_names)
+    assert {
+        "id",
+        "query_text",
+        "category",
+        "min_price",
+        "max_price",
+        "notes",
+        "created_at",
+    }.issubset(col_names)
 
 
 @pytest.mark.unit
@@ -111,7 +130,9 @@ def test_insert_category_and_product(db_session):
     """ORM models can be instantiated and saved (round-trip smoke test)."""
     from app.models.product import Category, Product, ProductSpecification
 
-    cat = Category(name="Test Electronics", slug="test-electronics", description="Test category")
+    cat = Category(
+        name="Test Electronics", slug="test-electronics", description="Test category"
+    )
     db_session.add(cat)
     db_session.flush()  # get auto-assigned id without committing
 

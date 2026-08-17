@@ -13,7 +13,7 @@ References:
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Optional
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -22,8 +22,10 @@ from pydantic import BaseModel, Field
 #  Common / shared
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class SpecificationResponse(BaseModel):
     """Single key-value product specification. API_SPEC.md §2.1"""
+
     key: str
     value: str
 
@@ -32,6 +34,7 @@ class SpecificationResponse(BaseModel):
 
 class ProductResponse(BaseModel):
     """Full product object. API_SPEC.md §2.2"""
+
     id: int
     name: str
     description: str
@@ -52,6 +55,7 @@ class ProductResponse(BaseModel):
 
 class PaginationMeta(BaseModel):
     """Pagination envelope. API_SPEC.md §2.4"""
+
     page: int
     page_size: int
     total_results: int
@@ -64,6 +68,7 @@ class PaginationMeta(BaseModel):
 #  Search
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class FiltersApplied(BaseModel):
     category: Optional[str] = None
     min_price: Optional[float] = None
@@ -72,6 +77,7 @@ class FiltersApplied(BaseModel):
 
 class NLExtracted(BaseModel):
     """Values extracted by inline NL price parser."""
+
     max_price: Optional[float] = None
     min_price: Optional[float] = None
     category_hint: Optional[str] = None
@@ -79,6 +85,7 @@ class NLExtracted(BaseModel):
 
 class QueryMeta(BaseModel):
     """Describes how the query was interpreted. API_SPEC.md §4.1"""
+
     raw: str
     processed_tokens: list[str]
     mode: str
@@ -88,6 +95,7 @@ class QueryMeta(BaseModel):
 
 class SearchMetadata(BaseModel):
     """Search execution metadata. API_SPEC.md §4.1"""
+
     latency_ms: float
     total_candidates: int
     fallback_applied: bool
@@ -98,6 +106,7 @@ class SearchMetadata(BaseModel):
 
 class SearchResultItem(BaseModel):
     """Single ranked result. API_SPEC.md §2.3"""
+
     rank: int
     score: float
     product: ProductResponse
@@ -105,6 +114,7 @@ class SearchResultItem(BaseModel):
 
 class SearchResponse(BaseModel):
     """Full search response envelope. API_SPEC.md §4.1"""
+
     query: QueryMeta
     results: list[SearchResultItem]
     pagination: PaginationMeta
@@ -115,8 +125,10 @@ class SearchResponse(BaseModel):
 #  Search/Compare
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class CompareResultItem(BaseModel):
     """Single result in compare mode. API_SPEC.md §4.1 compare endpoint."""
+
     rank: int
     score: float
     product_id: int
@@ -134,8 +146,10 @@ class CompareResponse(BaseModel):
 #  Search/Suggest
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class SuggestResponse(BaseModel):
     """GET /search/suggest response. DEVELOPMENT_PLAN.md §4.4"""
+
     query: str
     suggestions: list[str]
     total: int
@@ -145,13 +159,16 @@ class SuggestResponse(BaseModel):
 #  Products
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class SingleProductResponse(BaseModel):
     """GET /products/{id} response. API_SPEC.md §4.2"""
+
     product: ProductResponse
 
 
 class ProductListResponse(BaseModel):
     """GET /products response. API_SPEC.md §4.2"""
+
     products: list[ProductResponse]
     pagination: PaginationMeta
 
@@ -160,8 +177,10 @@ class ProductListResponse(BaseModel):
 #  Categories
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class CategoryResponse(BaseModel):
     """Single category object. API_SPEC.md §4.3"""
+
     id: int
     name: str
     slug: str
@@ -174,12 +193,14 @@ class CategoryResponse(BaseModel):
 
 class CategoryListResponse(BaseModel):
     """GET /categories response. API_SPEC.md §4.3"""
+
     categories: list[CategoryResponse]
     total: int
 
 
 class SingleCategoryResponse(BaseModel):
     """GET /categories/{id} response. API_SPEC.md §4.3"""
+
     category: CategoryResponse
 
 
@@ -187,8 +208,10 @@ class SingleCategoryResponse(BaseModel):
 #  Evaluation
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class PerQueryMetrics(BaseModel):
     """Per-query evaluation metrics. API_SPEC.md §4.4"""
+
     query: str
     precision_at_k: float
     recall_at_k: float
@@ -199,6 +222,7 @@ class PerQueryMetrics(BaseModel):
 
 class ModeMetrics(BaseModel):
     """Aggregate metrics for a single mode. API_SPEC.md §4.4"""
+
     precision_at_k: float
     recall_at_k: float
     mrr: float
@@ -214,6 +238,7 @@ class ComparisonSummary(BaseModel):
 
 class EvaluationReport(BaseModel):
     """Full evaluation report. API_SPEC.md §4.4"""
+
     k: int
     total_queries: int
     modes: dict[str, ModeMetrics]
@@ -223,12 +248,14 @@ class EvaluationReport(BaseModel):
 
 class EvaluationResponse(BaseModel):
     """POST /evaluate response. API_SPEC.md §4.4"""
+
     evaluation_report: EvaluationReport
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  Query Sets
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class QuerySetItem(BaseModel):
     id: int
@@ -245,6 +272,7 @@ class QuerySetsResponse(BaseModel):
 #  Error
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class ErrorDetail(BaseModel):
     code: str
     message: str
@@ -258,6 +286,7 @@ class ErrorResponse(BaseModel):
 # ─────────────────────────────────────────────────────────────────────────────
 #  Health
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class IndexHealth(BaseModel):
     ready: bool

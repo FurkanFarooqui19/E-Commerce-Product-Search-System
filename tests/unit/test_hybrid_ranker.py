@@ -27,6 +27,7 @@ from app.models.index import CorpusStats, PostingEntry, TermEntry
 #  Shared fixtures
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @pytest.fixture(scope="module")
 def corpus():
     """
@@ -41,7 +42,12 @@ def corpus():
     stats = CorpusStats(
         total_documents=3,
         avg_doc_length=6.0,
-        avg_field_lengths={"name": 2.0, "description": 4.0, "category": 0.0, "specs": 0.0},
+        avg_field_lengths={
+            "name": 2.0,
+            "description": 4.0,
+            "category": 0.0,
+            "specs": 0.0,
+        },
         doc_lengths={1: 4, 2: 8, 3: 6},
         field_lengths={
             1: {"name": 2, "description": 2, "category": 0, "specs": 0},
@@ -82,11 +88,14 @@ def corpus():
 #  1. Basic smoke test
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @pytest.mark.unit
 def test_hybrid_returns_results(corpus):
     """HybridRanker returns a non-empty, sorted list for matching tokens."""
     index, stats = corpus
-    results = HybridRanker.rank(["wireless"], [1, 2, 3], index, stats, k1=1.5, b=0.75, alpha=0.8)
+    results = HybridRanker.rank(
+        ["wireless"], [1, 2, 3], index, stats, k1=1.5, b=0.75, alpha=0.8
+    )
     assert len(results) >= 1
     # Scores are in descending order
     scores = [s for _, s in results]
@@ -97,6 +106,7 @@ def test_hybrid_returns_results(corpus):
 #  2. alpha=1.0 → pure BM25 ordering
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @pytest.mark.unit
 def test_hybrid_alpha_one_matches_bm25_ordering(corpus):
     """
@@ -104,19 +114,22 @@ def test_hybrid_alpha_one_matches_bm25_ordering(corpus):
     so the ranking order must match BM25Ranker exactly.
     """
     index, stats = corpus
-    hybrid = HybridRanker.rank(["wireless"], [1, 2], index, stats, k1=1.5, b=0.75, alpha=1.0)
+    hybrid = HybridRanker.rank(
+        ["wireless"], [1, 2], index, stats, k1=1.5, b=0.75, alpha=1.0
+    )
     bm25 = BM25Ranker.rank(["wireless"], [1, 2], index, stats, k1=1.5, b=0.75)
 
     hybrid_ids = [pid for pid, _ in hybrid]
     bm25_ids = [pid for pid, _ in bm25]
-    assert hybrid_ids == bm25_ids, (
-        f"alpha=1.0 hybrid order {hybrid_ids} != BM25 order {bm25_ids}"
-    )
+    assert (
+        hybrid_ids == bm25_ids
+    ), f"alpha=1.0 hybrid order {hybrid_ids} != BM25 order {bm25_ids}"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  3. alpha=0.0 → pure field_bonus ordering
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.unit
 def test_hybrid_alpha_zero_ranks_by_field_bonus(corpus):
@@ -127,7 +140,9 @@ def test_hybrid_alpha_zero_ranks_by_field_bonus(corpus):
     Therefore doc 1 must outscore doc 2.
     """
     index, stats = corpus
-    results = HybridRanker.rank(["wireless"], [1, 2], index, stats, k1=1.5, b=0.75, alpha=0.0)
+    results = HybridRanker.rank(
+        ["wireless"], [1, 2], index, stats, k1=1.5, b=0.75, alpha=0.0
+    )
     ids = [pid for pid, _ in results]
     assert ids[0] == 1, "Name-match should rank above description-match when alpha=0"
 
@@ -136,6 +151,7 @@ def test_hybrid_alpha_zero_ranks_by_field_bonus(corpus):
 #  4. field_bonus: name match outranks description match (alpha=0.0)
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @pytest.mark.unit
 def test_field_bonus_name_beats_description(corpus):
     """
@@ -143,15 +159,18 @@ def test_field_bonus_name_beats_description(corpus):
     vs 'description' (1.5).  With alpha=0 this difference must be visible.
     """
     index, stats = corpus
-    results = HybridRanker.rank(["wireless"], [1, 2], index, stats, k1=1.5, b=0.75, alpha=0.0)
-    score_name = dict(results)[1]       # doc 1 matched in name
-    score_desc = dict(results)[2]       # doc 2 matched in description
+    results = HybridRanker.rank(
+        ["wireless"], [1, 2], index, stats, k1=1.5, b=0.75, alpha=0.0
+    )
+    score_name = dict(results)[1]  # doc 1 matched in name
+    score_desc = dict(results)[2]  # doc 2 matched in description
     assert score_name > score_desc
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  5. Hybrid score is the correct convex combination
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.unit
 def test_hybrid_score_is_convex_combination(corpus):
@@ -172,17 +191,20 @@ def test_hybrid_score_is_convex_combination(corpus):
 
     expected = alpha * bm25_score + (1.0 - alpha) * field_bonus
 
-    hybrid_results = HybridRanker.rank(["wireless"], [1], index, stats, k1=1.5, b=0.75, alpha=alpha)
+    hybrid_results = HybridRanker.rank(
+        ["wireless"], [1], index, stats, k1=1.5, b=0.75, alpha=alpha
+    )
     hybrid_score = dict(hybrid_results).get(1, 0.0)
 
-    assert math.isclose(hybrid_score, expected, rel_tol=1e-9), (
-        f"Expected {expected:.6f}, got {hybrid_score:.6f}"
-    )
+    assert math.isclose(
+        hybrid_score, expected, rel_tol=1e-9
+    ), f"Expected {expected:.6f}, got {hybrid_score:.6f}"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  6. Non-matching documents excluded
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.unit
 def test_hybrid_excludes_non_matching_documents(corpus):
@@ -191,7 +213,9 @@ def test_hybrid_excludes_non_matching_documents(corpus):
     Doc 3 matches 'headphon' only — querying ['wireless'] must exclude it.
     """
     index, stats = corpus
-    results = HybridRanker.rank(["wireless"], [1, 2, 3], index, stats, k1=1.5, b=0.75, alpha=0.8)
+    results = HybridRanker.rank(
+        ["wireless"], [1, 2, 3], index, stats, k1=1.5, b=0.75, alpha=0.8
+    )
     result_ids = {pid for pid, _ in results}
     assert 3 not in result_ids, "Doc 3 should be excluded (no 'wireless' match)"
 
@@ -199,6 +223,7 @@ def test_hybrid_excludes_non_matching_documents(corpus):
 # ─────────────────────────────────────────────────────────────────────────────
 #  7. Guard clauses — empty inputs
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.unit
 def test_hybrid_empty_tokens_returns_empty(corpus):
@@ -222,6 +247,7 @@ def test_hybrid_no_corpus_stats_returns_empty(corpus):
 #  8. alpha parameter influence
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @pytest.mark.unit
 def test_higher_alpha_gives_more_weight_to_bm25(corpus):
     """
@@ -242,14 +268,15 @@ def test_higher_alpha_gives_more_weight_to_bm25(corpus):
     r_low = dict(HybridRanker.rank(["wireless"], [1, 2], index, stats, alpha=0.1))
 
     # Scores should differ between the two alpha settings
-    assert not math.isclose(r_high.get(1, 0), r_low.get(1, 0)), (
-        "Score for doc 1 should differ between alpha=0.9 and alpha=0.1"
-    )
+    assert not math.isclose(
+        r_high.get(1, 0), r_low.get(1, 0)
+    ), "Score for doc 1 should differ between alpha=0.9 and alpha=0.1"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  9. Multi-token query — field_bonus normalised by |Q|
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.unit
 def test_field_bonus_normalised_by_query_length(corpus):
@@ -262,16 +289,17 @@ def test_field_bonus_normalised_by_query_length(corpus):
     index, stats = corpus
     # alpha=0 → pure field_bonus
     results_alpha0 = dict(
-        HybridRanker.rank(["wireless", "headphon"], [1, 3], index, stats,
-                          k1=1.5, b=0.75, alpha=0.0)
+        HybridRanker.rank(
+            ["wireless", "headphon"], [1, 3], index, stats, k1=1.5, b=0.75, alpha=0.0
+        )
     )
     # Doc 1 matches 'wireless' in name (3.0), normalised by 2 tokens → 1.5
     expected_bonus_doc1 = 3.0 / 2
-    assert math.isclose(results_alpha0[1], expected_bonus_doc1, rel_tol=1e-9), (
-        f"Expected field_bonus 1.5 for doc1, got {results_alpha0[1]}"
-    )
+    assert math.isclose(
+        results_alpha0[1], expected_bonus_doc1, rel_tol=1e-9
+    ), f"Expected field_bonus 1.5 for doc1, got {results_alpha0[1]}"
     # Doc 3 matches 'headphon' in name (3.0), normalised by 2 tokens → 1.5
     expected_bonus_doc3 = 3.0 / 2
-    assert math.isclose(results_alpha0[3], expected_bonus_doc3, rel_tol=1e-9), (
-        f"Expected field_bonus 1.5 for doc3, got {results_alpha0[3]}"
-    )
+    assert math.isclose(
+        results_alpha0[3], expected_bonus_doc3, rel_tol=1e-9
+    ), f"Expected field_bonus 1.5 for doc3, got {results_alpha0[3]}"

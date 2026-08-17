@@ -33,7 +33,7 @@ class ProductService:
         """Return the active product with the given ID, or None."""
         return (
             db.query(Product)
-            .filter(Product.id == product_id, Product.is_active == True)
+            .filter(Product.id == product_id, Product.is_active)
             .first()
         )
 
@@ -97,24 +97,32 @@ class ProductService:
         """
         rows = (
             db.query(Category, func.count(Product.id).label("product_count"))
-            .outerjoin(Product, (Product.category_id == Category.id) & (Product.is_active == True))
+            .outerjoin(
+                Product,
+                (Product.category_id == Category.id) & Product.is_active,
+            )
             .group_by(Category.id)
             .order_by(Category.name)
             .all()
         )
-        return rows  # [(Category, count), …]
+        return [(cat, count) for cat, count in rows]
 
     @staticmethod
-    def get_category_by_id(category_id: int, db: Session) -> Optional[tuple[Category, int]]:
+    def get_category_by_id(
+        category_id: int, db: Session
+    ) -> Optional[tuple[Category, int]]:
         """
         Return a single category with its active product count, or None.
         API_SPEC.md §4.3
         """
         row = (
             db.query(Category, func.count(Product.id).label("product_count"))
-            .outerjoin(Product, (Product.category_id == Category.id) & (Product.is_active == True))
+            .outerjoin(
+                Product,
+                (Product.category_id == Category.id) & Product.is_active,
+            )
             .filter(Category.id == category_id)
             .group_by(Category.id)
             .first()
         )
-        return row  # (Category, count) or None
+        return (row[0], row[1]) if row else None

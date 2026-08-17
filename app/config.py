@@ -45,8 +45,8 @@ INDEX_PATH: str = os.getenv("INDEX_PATH", "app/data/index.pkl")
 # ─────────────────────────────────────────────────────────────────────────────
 #  BM25 Parameters (SEARCH_ENGINE_SPEC.md §6, §13)
 # ─────────────────────────────────────────────────────────────────────────────
-BM25_K1: float = float(os.getenv("BM25_K1", "1.5"))   # TF saturation
-BM25_B: float = float(os.getenv("BM25_B", "0.75"))    # Length normalisation
+BM25_K1: float = float(os.getenv("BM25_K1", "1.5"))  # TF saturation
+BM25_B: float = float(os.getenv("BM25_B", "0.75"))  # Length normalisation
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  Hybrid Ranking (SEARCH_ENGINE_SPEC.md §10.2) — Phase 4
@@ -74,21 +74,33 @@ DEFAULT_PAGE_SIZE: int = int(os.getenv("DEFAULT_PAGE_SIZE", "10"))
 MAX_PAGE_SIZE: int = int(os.getenv("MAX_PAGE_SIZE", "100"))
 
 # Minimum normalised score below which a result is flagged as low-confidence
-LOW_CONFIDENCE_THRESHOLD: float = float(
-    os.getenv("LOW_CONFIDENCE_THRESHOLD", "0.05")
-)
+LOW_CONFIDENCE_THRESHOLD: float = float(os.getenv("LOW_CONFIDENCE_THRESHOLD", "0.05"))
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  NLP (SEARCH_ENGINE_SPEC.md §2)
 # ─────────────────────────────────────────────────────────────────────────────
-STEMMER: str = os.getenv("STEMMER", "porter")   # options: porter | snowball
+STEMMER: str = os.getenv("STEMMER", "porter")  # options: porter | snowball
 
 # Standard NLTK English stopwords are extended with these domain terms
 # (SEARCH_ENGINE_SPEC.md §2.2)
 CUSTOM_STOPWORDS: tuple[str, ...] = (
-    "best", "good", "great", "top", "cheap", "affordable",
-    "nice", "perfect", "buy", "get", "find", "looking",
-    "want", "need", "show", "list", "available",
+    "best",
+    "good",
+    "great",
+    "top",
+    "cheap",
+    "affordable",
+    "nice",
+    "perfect",
+    "buy",
+    "get",
+    "find",
+    "looking",
+    "want",
+    "need",
+    "show",
+    "list",
+    "available",
 )
 
 # ─────────────────────────────────────────────────────────────────────────────

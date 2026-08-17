@@ -106,6 +106,7 @@ def test_health_endpoint_real_status(client):
 def test_health_endpoint_degraded_when_index_not_ready(client):
     """Verify GET /api/v1/health returns 503 when index is not ready."""
     from app.models.index import IndexStore
+
     store = IndexStore()
     store.is_ready = False
     try:
@@ -121,6 +122,7 @@ def test_health_endpoint_degraded_when_index_not_ready(client):
 # ─────────────────────────────────────────────────────────────────────────────
 #  NL Query Parser integration tests (DEVELOPMENT_PLAN.md §4.1)
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.integration
 def test_nl_parser_auto_applies_max_price(client):
@@ -142,15 +144,15 @@ def test_nl_parser_auto_applies_max_price(client):
 
     # NL parser must have extracted max_price
     nl = data["query"]["nl_extracted"]
-    assert nl["max_price"] == pytest.approx(2000.0), (
-        "NL parser did not extract max_price=2000 from 'under 2000'"
-    )
+    assert nl["max_price"] == pytest.approx(
+        2000.0
+    ), "NL parser did not extract max_price=2000 from 'under 2000'"
 
     # The extracted value must have been applied as a filter
     applied = data["query"]["filters_applied"]
-    assert applied["max_price"] == pytest.approx(2000.0), (
-        "Extracted max_price was not forwarded to filters_applied"
-    )
+    assert applied["max_price"] == pytest.approx(
+        2000.0
+    ), "Extracted max_price was not forwarded to filters_applied"
 
     # If no fallback was triggered, every result must respect the price cap
     if not data["metadata"]["fallback_applied"]:

@@ -31,12 +31,14 @@ engine = create_engine(
 # Enable WAL mode for SQLite to reduce concurrency issues under load
 # (DEVELOPMENT_PLAN.md §10, Risk Register)
 if DATABASE_URL.startswith("sqlite"):
+
     @event.listens_for(engine, "connect")
     def _set_sqlite_pragmas(dbapi_conn, connection_record):
         cursor = dbapi_conn.cursor()
         cursor.execute("PRAGMA journal_mode=WAL")
         cursor.execute("PRAGMA foreign_keys=ON")
         cursor.close()
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  Session factory
@@ -54,6 +56,7 @@ SessionLocal = sessionmaker(
 # ─────────────────────────────────────────────────────────────────────────────
 class Base(DeclarativeBase):
     """Base class for all ORM models."""
+
     pass
 
 

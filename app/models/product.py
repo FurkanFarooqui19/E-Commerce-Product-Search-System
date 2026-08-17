@@ -115,9 +115,7 @@ class Product(Base):
         Concatenate all specification key-value pairs into a single string
         for use during index construction (DATABASE.md §3.3, index-time handling).
         """
-        return " ".join(
-            f"{s.spec_key} {s.spec_value}" for s in self.specifications
-        )
+        return " ".join(f"{s.spec_key} {s.spec_value}" for s in self.specifications)
 
 
 class ProductSpecification(Base):

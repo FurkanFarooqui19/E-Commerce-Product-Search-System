@@ -62,7 +62,9 @@ def test_search_headphones_regression_all_modes(client):
     relevance_terms = ("headphone", "earbud", "headset")
 
     for mode in ["keyword", "tfidf", "bm25"]:
-        response = client.get(f"/api/v1/search?q=headphones&mode={mode}&page=1&page_size=10")
+        response = client.get(
+            f"/api/v1/search?q=headphones&mode={mode}&page=1&page_size=10"
+        )
         assert response.status_code == 200
 
         data = response.json()
@@ -75,7 +77,9 @@ def test_search_headphones_regression_all_modes(client):
             (item["product"]["name"] + " " + item["product"]["description"]).lower()
             for item in data["results"]
         ]
-        assert any(any(term in text for term in relevance_terms) for text in combined_text)
+        assert any(
+            any(term in text for term in relevance_terms) for text in combined_text
+        )
 
 
 @pytest.mark.integration
@@ -109,7 +113,10 @@ def test_category_filter_reduces_results(client):
     unfiltered = client.get("/api/v1/search?q=Item").json()
     filtered = client.get("/api/v1/search?q=Item&category=Electronics").json()
 
-    assert unfiltered["pagination"]["total_results"] >= filtered["pagination"]["total_results"]
+    assert (
+        unfiltered["pagination"]["total_results"]
+        >= filtered["pagination"]["total_results"]
+    )
     for item in filtered["results"]:
         assert "Electronics" in item["product"]["category"]
 
@@ -118,7 +125,9 @@ def test_category_filter_reduces_results(client):
 def test_price_filtering_bounds(client):
     """5. Price filtering ensures every returned product is within the requested range."""
     min_p, max_p = 10000.0, 30000.0
-    response = client.get(f"/api/v1/search?q=Electronics&min_price={min_p}&max_price={max_p}")
+    response = client.get(
+        f"/api/v1/search?q=Electronics&min_price={min_p}&max_price={max_p}"
+    )
     assert response.status_code == 200
     data = response.json()
     assert len(data["results"]) > 0
@@ -131,7 +140,9 @@ def test_price_filtering_bounds(client):
 def test_pagination_metadata_is_correct(client):
     """6. Pagination metadata is correct (page, page_size, total_results, etc.)."""
     page_size = 5
-    page_1 = client.get(f"/api/v1/search?q=Electronics&page=1&page_size={page_size}").json()
+    page_1 = client.get(
+        f"/api/v1/search?q=Electronics&page=1&page_size={page_size}"
+    ).json()
     pag = page_1["pagination"]
 
     assert pag["page"] == 1
@@ -141,7 +152,9 @@ def test_pagination_metadata_is_correct(client):
     if pag["total_pages"] > 1:
         assert pag["has_next"] is True
 
-        page_2 = client.get(f"/api/v1/search?q=Electronics&page=2&page_size={page_size}").json()
+        page_2 = client.get(
+            f"/api/v1/search?q=Electronics&page=2&page_size={page_size}"
+        ).json()
         assert page_2["pagination"]["page"] == 2
         assert page_2["pagination"]["has_prev"] is True
 
@@ -188,7 +201,9 @@ def test_invalid_page_and_page_size_returns_400(client):
 @pytest.mark.integration
 def test_search_compare_returns_results(client):
     """9. GET /api/v1/search/compare returns results for all requested modes."""
-    response = client.get("/api/v1/search/compare?q=Sony&modes=keyword,tfidf,bm25&top_k=5")
+    response = client.get(
+        "/api/v1/search/compare?q=Sony&modes=keyword,tfidf,bm25&top_k=5"
+    )
     assert response.status_code == 200
     data = response.json()
     assert data["query"] == "Sony"
@@ -212,7 +227,9 @@ def test_search_compare_validation_errors(client):
     assert res_empty.status_code == 400
     assert res_empty.json()["detail"]["error"]["code"] == "MISSING_QUERY"
 
-    res_price = client.get("/api/v1/search/compare?q=Sony&min_price=5000&max_price=1000")
+    res_price = client.get(
+        "/api/v1/search/compare?q=Sony&min_price=5000&max_price=1000"
+    )
     assert res_price.status_code == 400
     assert res_price.json()["detail"]["error"]["code"] == "INVALID_PRICE_RANGE"
 
@@ -220,6 +237,7 @@ def test_search_compare_validation_errors(client):
 # ─────────────────────────────────────────────────────────────────────────────
 #  Query Suggestions / Autocomplete (DEVELOPMENT_PLAN.md §4.4)
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.integration
 def test_search_suggest_wire(client):
@@ -271,4 +289,3 @@ def test_search_suggest_no_matches(client):
 
     assert data["suggestions"] == []
     assert data["total"] == 0
-

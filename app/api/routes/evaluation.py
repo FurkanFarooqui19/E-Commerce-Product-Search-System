@@ -61,7 +61,16 @@ def evaluate(request: EvaluationRequest, db: Session = Depends(get_db)):
     try:
         result = EvaluationService.run(request, db)
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail={"error": {"code": "VALIDATION_ERROR", "message": str(exc), "field": None}})
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "error": {
+                    "code": "VALIDATION_ERROR",
+                    "message": str(exc),
+                    "field": None,
+                }
+            },
+        )
 
     return result
 
@@ -83,6 +92,7 @@ def list_query_sets(db: Session = Depends(get_db)):
 
     # Determine earliest created_at for the virtual query set
     from sqlalchemy import func
+
     earliest = db.query(func.min(EvaluationQuery.created_at)).scalar()
 
     return {

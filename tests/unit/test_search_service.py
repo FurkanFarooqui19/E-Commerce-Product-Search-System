@@ -14,8 +14,7 @@ Covers:
 from __future__ import annotations
 
 import pytest
-from unittest.mock import MagicMock, patch
-from datetime import datetime
+from unittest.mock import MagicMock
 
 from app.services.search_service import (
     SearchService,
@@ -33,6 +32,7 @@ def _extract(query: str):
 # ─────────────────────────────────────────────────────────────────────────────
 #  NL Price Extraction
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.unit
 def test_extract_price_under():
@@ -88,10 +88,11 @@ def test_extract_price_more_than():
 #  Lowest-IDF token helper
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @pytest.mark.unit
 def test_get_lowest_idf_token_returns_most_common():
     """The token with highest df (most common) should be returned as lowest-IDF."""
-    from app.models.index import TermEntry, PostingEntry, CorpusStats, IndexStore
+    from app.models.index import TermEntry, CorpusStats, IndexStore
 
     # Reset singleton for a clean state
     store = IndexStore()
@@ -120,6 +121,7 @@ def test_get_lowest_idf_token_returns_most_common():
 # ─────────────────────────────────────────────────────────────────────────────
 #  Pipeline: empty tokens → empty result
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.unit
 def test_search_empty_query_after_preprocessing():
@@ -158,6 +160,7 @@ def test_search_empty_query_after_preprocessing():
 #  Pipeline: pagination math
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @pytest.mark.unit
 def test_pagination_total_pages_computed_correctly():
     """47 results, page_size=10 → total_pages=5"""
@@ -188,6 +191,7 @@ def test_pagination_single_page():
 # ─────────────────────────────────────────────────────────────────────────────
 #  Schema validation
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.unit
 def test_search_request_invalid_mode():

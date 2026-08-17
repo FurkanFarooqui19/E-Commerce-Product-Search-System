@@ -37,39 +37,66 @@ def mock_index_store():
         "wireless": TermEntry(
             doc_freq=3,
             postings={
-                1: PostingEntry(fields={"name": 1, "description": 0, "category": 0, "specs": 0}, total_tf=1),
-                2: PostingEntry(fields={"name": 1, "description": 1, "category": 0, "specs": 0}, total_tf=2),
-                3: PostingEntry(fields={"name": 1, "description": 0, "category": 0, "specs": 0}, total_tf=1),
+                1: PostingEntry(
+                    fields={"name": 1, "description": 0, "category": 0, "specs": 0},
+                    total_tf=1,
+                ),
+                2: PostingEntry(
+                    fields={"name": 1, "description": 1, "category": 0, "specs": 0},
+                    total_tf=2,
+                ),
+                3: PostingEntry(
+                    fields={"name": 1, "description": 0, "category": 0, "specs": 0},
+                    total_tf=1,
+                ),
             },
         ),
         # "wire": in 1 product name
         "wire": TermEntry(
             doc_freq=1,
             postings={
-                4: PostingEntry(fields={"name": 1, "description": 0, "category": 0, "specs": 0}, total_tf=1),
+                4: PostingEntry(
+                    fields={"name": 1, "description": 0, "category": 0, "specs": 0},
+                    total_tf=1,
+                ),
             },
         ),
         # "wired": in 2 product names
         "wired": TermEntry(
             doc_freq=2,
             postings={
-                5: PostingEntry(fields={"name": 1, "description": 0, "category": 0, "specs": 0}, total_tf=1),
-                6: PostingEntry(fields={"name": 1, "description": 0, "category": 0, "specs": 0}, total_tf=1),
+                5: PostingEntry(
+                    fields={"name": 1, "description": 0, "category": 0, "specs": 0},
+                    total_tf=1,
+                ),
+                6: PostingEntry(
+                    fields={"name": 1, "description": 0, "category": 0, "specs": 0},
+                    total_tf=1,
+                ),
             },
         ),
         # "wirelessspec": only in specs/description, NOT in name
         "wirelessspec": TermEntry(
             doc_freq=2,
             postings={
-                7: PostingEntry(fields={"name": 0, "description": 2, "category": 0, "specs": 1}, total_tf=3),
-                8: PostingEntry(fields={"name": 0, "description": 0, "category": 0, "specs": 1}, total_tf=1),
+                7: PostingEntry(
+                    fields={"name": 0, "description": 2, "category": 0, "specs": 1},
+                    total_tf=3,
+                ),
+                8: PostingEntry(
+                    fields={"name": 0, "description": 0, "category": 0, "specs": 1},
+                    total_tf=1,
+                ),
             },
         ),
         # "laptop": completely different prefix
         "laptop": TermEntry(
             doc_freq=5,
             postings={
-                9: PostingEntry(fields={"name": 1, "description": 0, "category": 0, "specs": 0}, total_tf=1),
+                9: PostingEntry(
+                    fields={"name": 1, "description": 0, "category": 0, "specs": 0},
+                    total_tf=1,
+                ),
             },
         ),
     }

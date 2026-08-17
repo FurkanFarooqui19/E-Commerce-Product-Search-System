@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 #  Pure metric functions (testable independently)
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 def precision_at_k(retrieved_ids: list[int], relevant_ids: set[int], k: int) -> float:
     """P@K = |relevant in top-K| / K  (SEARCH_EVALUATION.md §3.1)"""
     if k == 0:
@@ -49,7 +50,9 @@ def recall_at_k(retrieved_ids: list[int], relevant_ids: set[int], k: int) -> flo
     return hits / len(relevant_ids)
 
 
-def reciprocal_rank(retrieved_ids: list[int], relevant_ids: set[int], cap: int = 20) -> float:
+def reciprocal_rank(
+    retrieved_ids: list[int], relevant_ids: set[int], cap: int = 20
+) -> float:
     """
     RR = 1/rank_of_first_relevant (grade >= 1), 0 if none in top-cap.
     SEARCH_EVALUATION.md §3.3
@@ -99,6 +102,7 @@ def ndcg_at_k(retrieved_ids: list[int], grades: dict[int, int], k: int) -> float
 #  EvaluationService
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class EvaluationService:
     """
     Runs evaluation benchmarks against a set of queries with known relevance.
@@ -123,9 +127,9 @@ class EvaluationService:
 
         for query_obj in queries:
             query_text = query_obj["query_text"]
-            grades: dict[int, int] = query_obj["grades"]          # product_id → 0-3
-            binary_rel: set[int] = query_obj["binary_relevant"]   # grade >= 2
-            mrr_rel: set[int] = query_obj["mrr_relevant"]         # grade >= 1
+            grades: dict[int, int] = query_obj["grades"]  # product_id → 0-3
+            binary_rel: set[int] = query_obj["binary_relevant"]  # grade >= 2
+            mrr_rel: set[int] = query_obj["mrr_relevant"]  # grade >= 1
 
             # Use query-level constraints from the dataset when present.
             q_category = query_obj.get("category", filters.category)
@@ -147,7 +151,9 @@ class EvaluationService:
                     )
                     retrieved_ids = [r["product"].id for r in result["results"]]
                 except Exception as exc:
-                    logger.warning("Search failed for query %r mode %s: %s", query_text, mode, exc)
+                    logger.warning(
+                        "Search failed for query %r mode %s: %s", query_text, mode, exc
+                    )
                     retrieved_ids = []
                 elapsed = (time.perf_counter() - t0) * 1000
 

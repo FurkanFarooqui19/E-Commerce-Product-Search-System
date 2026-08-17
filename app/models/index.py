@@ -1,23 +1,28 @@
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
+
 
 @dataclass
 class PostingEntry:
-    fields: dict[str, int]  # {"name": tf, "description": tf, "category": tf, "specs": tf}
+    fields: dict[
+        str, int
+    ]  # {"name": tf, "description": tf, "category": tf, "specs": tf}
     total_tf: int
+
 
 @dataclass
 class TermEntry:
     doc_freq: int
     postings: dict[int, PostingEntry]  # product_id -> PostingEntry
 
+
 @dataclass
 class CorpusStats:
     total_documents: int
     avg_doc_length: float
     avg_field_lengths: dict[str, float]  # {"name": float, "description": float, ...}
-    doc_lengths: dict[int, int]          # product_id -> total tokens (unweighted)
+    doc_lengths: dict[int, int]  # product_id -> total tokens (unweighted)
     field_lengths: dict[int, dict[str, int]]  # product_id -> {"name": length, ...}
+
 
 class IndexStore:
     _instance = None

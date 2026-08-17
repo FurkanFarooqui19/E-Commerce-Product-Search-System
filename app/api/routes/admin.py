@@ -40,7 +40,9 @@ def list_search_logs(
         ),
     ),
     page: int = Query(default=1, ge=1, description="Page number (1-indexed)."),
-    page_size: int = Query(default=50, ge=1, le=200, description="Rows per page (max 200)."),
+    page_size: int = Query(
+        default=50, ge=1, le=200, description="Rows per page (max 200)."
+    ),
     db: Session = Depends(get_db),
 ) -> dict:
     """

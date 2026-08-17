@@ -50,7 +50,7 @@ async def lifespan(app: FastAPI):
 
     # Import models so their tables are registered on Base.metadata before
     # create_all is called.
-    import app.models  # noqa: F401 — side-effect import
+    from app import models as _models  # noqa: F401 — side-effect import
 
     Base.metadata.create_all(bind=engine)
     logger.info("Database tables verified / created.")
@@ -58,6 +58,7 @@ async def lifespan(app: FastAPI):
     # Load index on startup
     from app.services.index_service import IndexService
     from app.database import SessionLocal
+
     with SessionLocal() as db:
         IndexService.load_index(db)
 
@@ -126,10 +127,15 @@ def health_check(response: Response) -> dict:
         logger.warning("Health check DB ping failed: %s", exc)
 
     from app.models.index import IndexStore
+
     store = IndexStore()
-    
+
     vocab_size = len(store.index) if store.is_ready else 0
-    doc_count = store.corpus_stats.total_documents if (store.is_ready and store.corpus_stats) else 0
+    doc_count = (
+        store.corpus_stats.total_documents
+        if (store.is_ready and store.corpus_stats)
+        else 0
+    )
 
     is_healthy = bool(db_connected and store.is_ready)
     if not is_healthy:
@@ -142,7 +148,9 @@ def health_check(response: Response) -> dict:
             "document_count": doc_count,
             "vocabulary_size": vocab_size,
             "built_at": None,  # Can add a timestamp if we start storing it in CorpusStats
-            "note": "Index loaded successfully." if store.is_ready else "Index not loaded.",
+            "note": (
+                "Index loaded successfully." if store.is_ready else "Index not loaded."
+            ),
         },
         "database": {
             "connected": db_connected,
@@ -157,8 +165,8 @@ def health_check(response: Response) -> dict:
 # ─────────────────────────────────────────────────────────────────────────────
 from app.api.routes import admin, search, products, categories, evaluation  # noqa: E402
 
-app.include_router(search.router,     prefix="/api/v1")
-app.include_router(products.router,   prefix="/api/v1")
+app.include_router(search.router, prefix="/api/v1")
+app.include_router(products.router, prefix="/api/v1")
 app.include_router(categories.router, prefix="/api/v1")
 app.include_router(evaluation.router, prefix="/api/v1")
-app.include_router(admin.router,      prefix="/api/v1")
+app.include_router(admin.router, prefix="/api/v1")

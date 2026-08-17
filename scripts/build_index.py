@@ -5,11 +5,14 @@ import logging
 # Ensure root of project is in python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from app.database import SessionLocal
-from app.services.index_service import IndexService
+from app.database import SessionLocal  # noqa: E402
+from app.services.index_service import IndexService  # noqa: E402
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 def main():
     logger.info("CLI build_index started.")
@@ -22,6 +25,7 @@ def main():
         sys.exit(1)
     finally:
         db.close()
+
 
 if __name__ == "__main__":
     main()

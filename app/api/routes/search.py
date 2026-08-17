@@ -14,10 +14,8 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
-from app.api.schemas.request import CompareRequest, SearchRequest
 from app.api.schemas.response import (
     CompareResponse,
-    CompareResultItem,
     SearchResponse,
     SuggestResponse,
 )
@@ -36,7 +34,13 @@ def _require_index():
     if not IndexStore().is_ready:
         raise HTTPException(
             status_code=503,
-            detail={"error": {"code": "INDEX_NOT_READY", "message": "Inverted index not yet built", "field": None}},
+            detail={
+                "error": {
+                    "code": "INDEX_NOT_READY",
+                    "message": "Inverted index not yet built",
+                    "field": None,
+                }
+            },
         )
 
 
@@ -62,7 +66,13 @@ def search(
     if not q.strip():
         raise HTTPException(
             status_code=400,
-            detail={"error": {"code": "MISSING_QUERY", "message": "Search query cannot be empty", "field": "q"}},
+            detail={
+                "error": {
+                    "code": "MISSING_QUERY",
+                    "message": "Search query cannot be empty",
+                    "field": "q",
+                }
+            },
         )
 
     # Validate mode
@@ -95,7 +105,13 @@ def search(
     if page < 1:
         raise HTTPException(
             status_code=400,
-            detail={"error": {"code": "INVALID_PAGE", "message": "page must be >= 1", "field": "page"}},
+            detail={
+                "error": {
+                    "code": "INVALID_PAGE",
+                    "message": "page must be >= 1",
+                    "field": "page",
+                }
+            },
         )
     if page_size < 1 or page_size > MAX_PAGE_SIZE:
         raise HTTPException(
@@ -124,7 +140,13 @@ def search(
         if "INDEX_NOT_READY" in str(exc):
             raise HTTPException(
                 status_code=503,
-                detail={"error": {"code": "INDEX_NOT_READY", "message": str(exc), "field": None}},
+                detail={
+                    "error": {
+                        "code": "INDEX_NOT_READY",
+                        "message": str(exc),
+                        "field": None,
+                    }
+                },
             )
         raise
 
@@ -156,7 +178,9 @@ def search(
 )
 def search_compare(
     q: str = Query(default="", max_length=500),
-    modes: str = Query(default="keyword,tfidf,bm25", description="Comma-separated list of modes"),
+    modes: str = Query(
+        default="keyword,tfidf,bm25", description="Comma-separated list of modes"
+    ),
     top_k: int = Query(default=10),
     category: Optional[str] = Query(default=None),
     min_price: Optional[float] = Query(default=None, ge=0.0),
@@ -169,7 +193,13 @@ def search_compare(
     if not q.strip():
         raise HTTPException(
             status_code=400,
-            detail={"error": {"code": "MISSING_QUERY", "message": "Search query cannot be empty", "field": "q"}},
+            detail={
+                "error": {
+                    "code": "MISSING_QUERY",
+                    "message": "Search query cannot be empty",
+                    "field": "q",
+                }
+            },
         )
 
     # Validate top_k
@@ -233,7 +263,9 @@ def search_compare(
 )
 def search_suggest(
     q: str = Query(default="", max_length=100, description="Query prefix to complete"),
-    limit: int = Query(default=5, ge=1, le=20, description="Maximum number of suggestions to return"),
+    limit: int = Query(
+        default=5, ge=1, le=20, description="Maximum number of suggestions to return"
+    ),
 ):
     _require_index()
 
@@ -256,6 +288,7 @@ def search_suggest(
 #  Helper
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 def _product_to_dict(product) -> dict:
     """Convert a SQLAlchemy Product ORM object to a response-compatible dict."""
     return {
@@ -271,8 +304,7 @@ def _product_to_dict(product) -> dict:
         "image_url": product.image_url,
         "is_active": product.is_active,
         "specifications": [
-            {"key": s.spec_key, "value": s.spec_value}
-            for s in product.specifications
+            {"key": s.spec_key, "value": s.spec_value} for s in product.specifications
         ],
         "created_at": product.created_at,
         "updated_at": product.updated_at,

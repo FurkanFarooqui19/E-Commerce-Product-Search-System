@@ -64,8 +64,9 @@ def initialise_nl_parser(category_names: list[str]) -> None:
     """
     global _nl_parser
     _nl_parser = NLQueryParser(category_names=category_names)
-    logger.info("NLQueryParser initialised with %d category names.", len(category_names))
-
+    logger.info(
+        "NLQueryParser initialised with %d category names.", len(category_names)
+    )
 
 
 def _select_ranker(mode: str):
@@ -78,7 +79,9 @@ def _select_ranker(mode: str):
     }.get(mode, BM25Ranker)
 
 
-def _run_ranker(mode: str, tokens: list[str], candidate_ids: list[int], store: IndexStore):
+def _run_ranker(
+    mode: str, tokens: list[str], candidate_ids: list[int], store: IndexStore
+):
     """Dispatch ranking to the appropriate engine with correct arguments."""
     if mode == "keyword":
         return KeywordRanker.rank(tokens, candidate_ids, store.index)
@@ -86,8 +89,13 @@ def _run_ranker(mode: str, tokens: list[str], candidate_ids: list[int], store: I
         return TFIDFRanker.rank(tokens, candidate_ids, store.index, store.corpus_stats)
     elif mode == "hybrid":
         return HybridRanker.rank(
-            tokens, candidate_ids, store.index, store.corpus_stats,
-            k1=BM25_K1, b=BM25_B, alpha=HYBRID_ALPHA,
+            tokens,
+            candidate_ids,
+            store.index,
+            store.corpus_stats,
+            k1=BM25_K1,
+            b=BM25_B,
+            alpha=HYBRID_ALPHA,
         )
     else:  # bm25 (default)
         return BM25Ranker.rank(
@@ -173,7 +181,9 @@ class SearchService:
                 page=page,
                 page_size=page_size,
                 latency_ms=latency_ms,
-                index_size=store.corpus_stats.total_documents if store.corpus_stats else 0,
+                index_size=(
+                    store.corpus_stats.total_documents if store.corpus_stats else 0
+                ),
             )
 
         # ── Steps 3–6: Filter + fallback ──────────────────────────────────
@@ -191,7 +201,9 @@ class SearchService:
 
         # ── Step 7: Result fusion (normalize + sort) ──────────────────────
         product_meta = cls._build_product_meta(scored, db)
-        fused = ResultFusion.normalize_and_sort(scored, used_tokens, store.index, product_meta)
+        fused = ResultFusion.normalize_and_sort(
+            scored, used_tokens, store.index, product_meta
+        )
 
         total_candidates = len(fused)
         low_confidence = bool(fused and fused[0][1] < LOW_CONFIDENCE_THRESHOLD)
@@ -208,10 +220,14 @@ class SearchService:
         results = []
         for rank_idx, (pid, score) in enumerate(page_slice, start=1):
             if pid in products_map:
-                results.append({"rank": rank_idx, "score": score, "product": products_map[pid]})
+                results.append(
+                    {"rank": rank_idx, "score": score, "product": products_map[pid]}
+                )
 
         latency_ms = (time.perf_counter() - t_start) * 1000
-        total_pages = max(1, -(-total_candidates // page_size)) if total_candidates else 0
+        total_pages = (
+            max(1, -(-total_candidates // page_size)) if total_candidates else 0
+        )
 
         # ── Step 10: Best-effort search logging (DEVELOPMENT_PLAN.md §4.3) ──
         SearchLogService.log(
@@ -238,7 +254,6 @@ class SearchService:
                 },
                 "nl_extracted": nl_extracted,
             },
-
             "results": results,
             "pagination": {
                 "page": page,
@@ -254,7 +269,9 @@ class SearchService:
                 "fallback_applied": fallback_applied,
                 "fallback_reason": fallback_reason,
                 "low_confidence": low_confidence,
-                "index_size": store.corpus_stats.total_documents if store.corpus_stats else 0,
+                "index_size": (
+                    store.corpus_stats.total_documents if store.corpus_stats else 0
+                ),
             },
         }
 
@@ -303,7 +320,13 @@ class SearchService:
             if scored:
                 return scored, True, f"Query reduced (dropped '{drop}')", None, reduced
 
-        return [], True, "No results found after relaxing all filters", None, current_tokens
+        return (
+            [],
+            True,
+            "No results found after relaxing all filters",
+            None,
+            current_tokens,
+        )
 
     @classmethod
     def _build_product_meta(
@@ -400,7 +423,9 @@ class SearchService:
             t0 = time.perf_counter()
             scored = _run_ranker(mode, tokens, candidates, store)
             product_meta = cls._build_product_meta(scored, db)
-            fused = ResultFusion.normalize_and_sort(scored, tokens, store.index, product_meta)
+            fused = ResultFusion.normalize_and_sort(
+                scored, tokens, store.index, product_meta
+            )
             elapsed = (time.perf_counter() - t0) * 1000
 
             page_slice = fused[:top_k]

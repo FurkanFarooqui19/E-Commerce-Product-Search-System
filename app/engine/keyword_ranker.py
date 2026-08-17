@@ -1,9 +1,7 @@
 class KeywordRanker:
     @staticmethod
     def rank(
-        tokens: list[str],
-        candidate_ids: list[int],
-        index: dict
+        tokens: list[str], candidate_ids: list[int], index: dict
     ) -> list[tuple[int, float]]:
         """
         Rank candidates based on the count of matching query tokens.

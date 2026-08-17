@@ -16,10 +16,7 @@ from sqlalchemy.orm import Session
 
 from app.api.schemas.response import (
     ProductListResponse,
-    ProductResponse,
     SingleProductResponse,
-    SpecificationResponse,
-    PaginationMeta,
 )
 from app.config import MAX_PAGE_SIZE
 from app.database import get_db
@@ -44,8 +41,7 @@ def _orm_to_product_response(product) -> dict:
         "image_url": product.image_url,
         "is_active": product.is_active,
         "specifications": [
-            {"key": s.spec_key, "value": s.spec_value}
-            for s in product.specifications
+            {"key": s.spec_key, "value": s.spec_value} for s in product.specifications
         ],
         "created_at": product.created_at,
         "updated_at": product.updated_at,

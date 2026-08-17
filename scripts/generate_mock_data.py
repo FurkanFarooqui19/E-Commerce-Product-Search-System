@@ -5,12 +5,32 @@ from datetime import datetime, timedelta
 RNG = random.Random(42)
 
 CATEGORIES = [
-    {"id": 1, "name": "Electronics", "slug": "electronics", "description": "Consumer electronics"},
-    {"id": 2, "name": "Clothing & Apparel", "slug": "clothing-apparel", "description": "Fashion"},
+    {
+        "id": 1,
+        "name": "Electronics",
+        "slug": "electronics",
+        "description": "Consumer electronics",
+    },
+    {
+        "id": 2,
+        "name": "Clothing & Apparel",
+        "slug": "clothing-apparel",
+        "description": "Fashion",
+    },
     {"id": 3, "name": "Books", "slug": "books", "description": "Books"},
     {"id": 4, "name": "Home & Kitchen", "slug": "home-kitchen", "description": "Home"},
-    {"id": 5, "name": "Sports & Outdoors", "slug": "sports-outdoors", "description": "Sports"},
-    {"id": 6, "name": "Health & Beauty", "slug": "health-beauty", "description": "Health"},
+    {
+        "id": 5,
+        "name": "Sports & Outdoors",
+        "slug": "sports-outdoors",
+        "description": "Sports",
+    },
+    {
+        "id": 6,
+        "name": "Health & Beauty",
+        "slug": "health-beauty",
+        "description": "Health",
+    },
     {"id": 7, "name": "Toys & Games", "slug": "toys-games", "description": "Toys"},
     {"id": 8, "name": "Automotive", "slug": "automotive", "description": "Automotive"},
 ]
@@ -52,12 +72,55 @@ CATEGORY_PRODUCT_TYPES = {
         "Bluetooth Speaker",
         "Webcam",
     ],
-    2: ["T-Shirt", "Jeans", "Hoodie", "Jacket", "Sneakers", "Running Shorts", "Dress", "Kurta"],
-    3: ["Fiction Book", "Programming Guide", "Biography", "Cookbook", "Science Book", "History Book"],
-    4: ["Mixer Grinder", "Air Fryer", "Cookware Set", "Vacuum Cleaner", "Water Purifier", "Desk Lamp"],
-    5: ["Yoga Mat", "Dumbbell Set", "Football", "Cricket Bat", "Trekking Backpack", "Cycling Helmet"],
-    6: ["Face Wash", "Moisturizer", "Sunscreen", "Hair Serum", "Vitamin Supplement", "Body Lotion"],
-    7: ["Building Blocks", "Board Game", "Remote Control Car", "Puzzle", "Action Figure"],
+    2: [
+        "T-Shirt",
+        "Jeans",
+        "Hoodie",
+        "Jacket",
+        "Sneakers",
+        "Running Shorts",
+        "Dress",
+        "Kurta",
+    ],
+    3: [
+        "Fiction Book",
+        "Programming Guide",
+        "Biography",
+        "Cookbook",
+        "Science Book",
+        "History Book",
+    ],
+    4: [
+        "Mixer Grinder",
+        "Air Fryer",
+        "Cookware Set",
+        "Vacuum Cleaner",
+        "Water Purifier",
+        "Desk Lamp",
+    ],
+    5: [
+        "Yoga Mat",
+        "Dumbbell Set",
+        "Football",
+        "Cricket Bat",
+        "Trekking Backpack",
+        "Cycling Helmet",
+    ],
+    6: [
+        "Face Wash",
+        "Moisturizer",
+        "Sunscreen",
+        "Hair Serum",
+        "Vitamin Supplement",
+        "Body Lotion",
+    ],
+    7: [
+        "Building Blocks",
+        "Board Game",
+        "Remote Control Car",
+        "Puzzle",
+        "Action Figure",
+    ],
     8: ["Car Vacuum", "Tyre Inflator", "Engine Oil", "Dash Cam", "Car Cover"],
 }
 
@@ -75,10 +138,12 @@ def _description(cat_name: str, brand: str, product_type: str, model: str) -> st
         f"This product focuses on reliable performance, durable construction, and comfortable long-session usage. "
         f"It offers modern features, dependable quality, and strong value for shoppers comparing options in {cat_name}."
     )
-    if "Headphone" in product_type or "Earbud" in product_type or "Headset" in product_type:
-        base += (
-            " Designed for immersive audio with clear vocals, punchy bass, wireless connectivity, and all-day comfort."
-        )
+    if (
+        "Headphone" in product_type
+        or "Earbud" in product_type
+        or "Headset" in product_type
+    ):
+        base += " Designed for immersive audio with clear vocals, punchy bass, wireless connectivity, and all-day comfort."
     return base
 
 
@@ -86,16 +151,30 @@ def _specifications(category_id: int, product_type: str) -> list[dict[str, str]]
     specs = [
         {"spec_key": "color", "spec_value": RNG.choice(COMMON_COLORS)},
         {"spec_key": "warranty", "spec_value": RNG.choice(["1 Year", "2 Years"])},
-        {"spec_key": "material", "spec_value": RNG.choice(["Premium", "Alloy", "Polymer"])},
+        {
+            "spec_key": "material",
+            "spec_value": RNG.choice(["Premium", "Alloy", "Polymer"]),
+        },
         {"spec_key": "model_year", "spec_value": str(RNG.randint(2021, 2026))},
     ]
 
     if category_id == 1:
         specs.extend(
             [
-                {"spec_key": "connectivity", "spec_value": RNG.choice(["Bluetooth 5.2", "Bluetooth 5.3", "Wired USB-C"])},
-                {"spec_key": "battery_life", "spec_value": f"{RNG.randint(18, 50)} hours"},
-                {"spec_key": "audio_profile", "spec_value": RNG.choice(["Balanced", "Bass Boost", "Studio"])},
+                {
+                    "spec_key": "connectivity",
+                    "spec_value": RNG.choice(
+                        ["Bluetooth 5.2", "Bluetooth 5.3", "Wired USB-C"]
+                    ),
+                },
+                {
+                    "spec_key": "battery_life",
+                    "spec_value": f"{RNG.randint(18, 50)} hours",
+                },
+                {
+                    "spec_key": "audio_profile",
+                    "spec_value": RNG.choice(["Balanced", "Bass Boost", "Studio"]),
+                },
                 {"spec_key": "device_type", "spec_value": product_type},
             ]
         )
@@ -103,7 +182,10 @@ def _specifications(category_id: int, product_type: str) -> list[dict[str, str]]
         specs.extend(
             [
                 {"spec_key": "weight", "spec_value": f"{RNG.randint(120, 1800)}g"},
-                {"spec_key": "size", "spec_value": RNG.choice(["S", "M", "L", "XL", "One Size"])},
+                {
+                    "spec_key": "size",
+                    "spec_value": RNG.choice(["S", "M", "L", "XL", "One Size"]),
+                },
             ]
         )
     return specs
@@ -148,11 +230,16 @@ def generate_products() -> list[dict]:
     return products
 
 
-def _make_judgments(products: list[dict], desired_terms: tuple[str, ...], max_items: int = 6) -> list[dict]:
+def _make_judgments(
+    products: list[dict], desired_terms: tuple[str, ...], max_items: int = 6
+) -> list[dict]:
     wanted = [
         p
         for p in products
-        if any(term.lower() in (p["name"] + " " + p["description"]).lower() for term in desired_terms)
+        if any(
+            term.lower() in (p["name"] + " " + p["description"]).lower()
+            for term in desired_terms
+        )
     ]
     if not wanted:
         return []
@@ -200,7 +287,9 @@ def _build_constraint_valid_judgments(
 ) -> list[dict]:
     category_id = None
     if category_name is not None:
-        category_id = next((c["id"] for c in CATEGORIES if c["name"] == category_name), None)
+        category_id = next(
+            (c["id"] for c in CATEGORIES if c["name"] == category_name), None
+        )
 
     constrained = [
         p
@@ -215,7 +304,9 @@ def _build_constraint_valid_judgments(
     constrained.sort(key=lambda p: p["id"])
 
     positives = [p for p in constrained if _contains_any_term(p, desired_terms)]
-    negatives_in_constraints = [p for p in constrained if not _contains_any_term(p, desired_terms)]
+    negatives_in_constraints = [
+        p for p in constrained if not _contains_any_term(p, desired_terms)
+    ]
     violating_constraints = [
         p
         for p in products
@@ -297,7 +388,13 @@ def generate_queries(products: list[dict]) -> list[dict]:
             "min_price": None,
             "max_price": 3000.0,
             "notes": "Category and price constrained electronics",
-            "desired_terms": ("electronics", "speaker", "webcam", "headphone", "earbud"),
+            "desired_terms": (
+                "electronics",
+                "speaker",
+                "webcam",
+                "headphone",
+                "earbud",
+            ),
         },
         {
             "query_text": "clothing under 3000",
@@ -321,7 +418,14 @@ def generate_queries(products: list[dict]) -> list[dict]:
             "min_price": None,
             "max_price": 3000.0,
             "notes": "Category and price constrained books",
-            "desired_terms": ("book", "guide", "biography", "cookbook", "history", "science"),
+            "desired_terms": (
+                "book",
+                "guide",
+                "biography",
+                "cookbook",
+                "history",
+                "science",
+            ),
         },
         {
             "query_text": "home under 3000",
@@ -329,7 +433,14 @@ def generate_queries(products: list[dict]) -> list[dict]:
             "min_price": None,
             "max_price": 3000.0,
             "notes": "Category and price constrained home products",
-            "desired_terms": ("mixer", "air fryer", "cookware", "vacuum", "lamp", "purifier"),
+            "desired_terms": (
+                "mixer",
+                "air fryer",
+                "cookware",
+                "vacuum",
+                "lamp",
+                "purifier",
+            ),
         },
         {
             "query_text": "sports under 3000",
@@ -337,7 +448,14 @@ def generate_queries(products: list[dict]) -> list[dict]:
             "min_price": None,
             "max_price": 3000.0,
             "notes": "Category and price constrained sports products",
-            "desired_terms": ("yoga", "dumbbell", "football", "cricket", "helmet", "backpack"),
+            "desired_terms": (
+                "yoga",
+                "dumbbell",
+                "football",
+                "cricket",
+                "helmet",
+                "backpack",
+            ),
         },
         {
             "query_text": "health under 3000",
@@ -345,7 +463,14 @@ def generate_queries(products: list[dict]) -> list[dict]:
             "min_price": None,
             "max_price": 3000.0,
             "notes": "Category and price constrained health products",
-            "desired_terms": ("face wash", "moisturizer", "sunscreen", "serum", "vitamin", "lotion"),
+            "desired_terms": (
+                "face wash",
+                "moisturizer",
+                "sunscreen",
+                "serum",
+                "vitamin",
+                "lotion",
+            ),
         },
         {
             "query_text": "toys under 3000",
@@ -353,7 +478,13 @@ def generate_queries(products: list[dict]) -> list[dict]:
             "min_price": None,
             "max_price": 3000.0,
             "notes": "Category and price constrained toys",
-            "desired_terms": ("blocks", "board game", "puzzle", "action figure", "remote control"),
+            "desired_terms": (
+                "blocks",
+                "board game",
+                "puzzle",
+                "action figure",
+                "remote control",
+            ),
         },
         {
             "query_text": "automotive under 3000",
