@@ -31,10 +31,12 @@ from sqlalchemy.orm import Session
 from app.config import (
     BM25_B,
     BM25_K1,
+    HYBRID_ALPHA,
     LOW_CONFIDENCE_THRESHOLD,
 )
 from app.engine.bm25_ranker import BM25Ranker
 from app.engine.filter_engine import FilterEngine
+from app.engine.hybrid_ranker import HybridRanker
 from app.engine.keyword_ranker import KeywordRanker
 from app.engine.nl_parser import NLQueryParser
 from app.engine.preprocessor import QueryPreprocessor
@@ -67,7 +69,12 @@ def initialise_nl_parser(category_names: list[str]) -> None:
 
 def _select_ranker(mode: str):
     """Return the appropriate ranker for the given mode string."""
-    return {"keyword": KeywordRanker, "tfidf": TFIDFRanker, "bm25": BM25Ranker}.get(mode, BM25Ranker)
+    return {
+        "keyword": KeywordRanker,
+        "tfidf": TFIDFRanker,
+        "bm25": BM25Ranker,
+        "hybrid": HybridRanker,
+    }.get(mode, BM25Ranker)
 
 
 def _run_ranker(mode: str, tokens: list[str], candidate_ids: list[int], store: IndexStore):
@@ -76,6 +83,11 @@ def _run_ranker(mode: str, tokens: list[str], candidate_ids: list[int], store: I
         return KeywordRanker.rank(tokens, candidate_ids, store.index)
     elif mode == "tfidf":
         return TFIDFRanker.rank(tokens, candidate_ids, store.index, store.corpus_stats)
+    elif mode == "hybrid":
+        return HybridRanker.rank(
+            tokens, candidate_ids, store.index, store.corpus_stats,
+            k1=BM25_K1, b=BM25_B, alpha=HYBRID_ALPHA,
+        )
     else:  # bm25 (default)
         return BM25Ranker.rank(
             tokens, candidate_ids, store.index, store.corpus_stats, BM25_K1, BM25_B
