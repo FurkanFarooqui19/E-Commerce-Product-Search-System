@@ -106,24 +106,24 @@ export const EvaluationPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/[0.08]">
         <div>
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-semibold text-indigo-400 mb-2">
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-mono font-semibold text-indigo-400 mb-2">
             <BarChart3 className="h-3.5 w-3.5" />
-            <span>Cranfield Evaluation Benchmark</span>
+            <span>Cranfield Evaluation Paradigm Benchmark</span>
           </div>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">
-            Information Retrieval Evaluation Dashboard
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            Information Retrieval Research Dashboard
           </h1>
           <p className="text-sm text-slate-400 mt-1">
-            Standard Cranfield paradigm benchmark over 30 curated e-commerce queries with 336 4-level graded judgments.
+            Empirical benchmark over 30 curated test queries with 336 4-level graded relevance judgments ($k=10$).
           </p>
         </div>
 
         <button
           onClick={executeBenchmark}
           disabled={loading}
-          className="px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold text-xs shadow-lg shadow-indigo-600/30 flex items-center space-x-2 transition-all self-start md:self-auto disabled:opacity-50"
+          className="px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 flex items-center space-x-2 transition-all self-start md:self-auto disabled:opacity-50 flex-shrink-0"
         >
           <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           <span>{loading ? "Evaluating Benchmark..." : "Re-Run 30-Query Benchmark"}</span>
@@ -140,77 +140,80 @@ export const EvaluationPage: React.FC = () => {
       {report && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {/* BM25 Precision@10 */}
-          <div className="glass-panel p-5 rounded-3xl border border-slate-800 space-y-2">
-            <div className="flex items-center justify-between text-xs text-slate-400">
+          <div className="glass-panel p-5 rounded-3xl border border-white/[0.08] shadow-glass space-y-3">
+            <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
               <span>Precision@10 (BM25)</span>
-              <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
-                PRD Target: ≥ 0.65
+              <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
+                Target: ≥ 0.65
               </span>
             </div>
-            <div className="text-3xl font-extrabold text-white font-mono">
+            <div className="text-3xl sm:text-4xl font-extrabold text-white font-mono tracking-tight">
               {report.modes.bm25.precision_at_k.toFixed(4)}
             </div>
             <div className="flex items-center space-x-1.5 text-xs text-emerald-400 font-medium pt-1">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              <span>Passed Target (Actual 0.6567)</span>
+              <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0" />
+              <span>Target Achieved (0.6567)</span>
             </div>
           </div>
 
           {/* BM25 NDCG@10 */}
-          <div className="glass-panel p-5 rounded-3xl border border-slate-800 space-y-2">
-            <div className="flex items-center justify-between text-xs text-slate-400">
+          <div className="glass-panel p-5 rounded-3xl border border-white/[0.08] shadow-glass space-y-3">
+            <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
               <span>NDCG@10 (BM25)</span>
-              <span className="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-bold">
+              <span className="px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-bold">
                 Rank Quality
               </span>
             </div>
-            <div className="text-3xl font-extrabold text-indigo-300 font-mono">
+            <div className="text-3xl sm:text-4xl font-extrabold text-indigo-300 font-mono tracking-tight">
               {report.modes.bm25.ndcg_at_k.toFixed(4)}
             </div>
-            <div className="text-xs text-slate-400 pt-1">
-              Keyword: <span className="font-mono">{report.modes.keyword.ndcg_at_k.toFixed(4)}</span> (+2.1% Gain)
+            <div className="text-xs text-slate-400 pt-1 font-mono flex items-center space-x-1">
+              <span>Keyword:</span>
+              <span className="text-slate-300 font-bold">{report.modes.keyword.ndcg_at_k.toFixed(4)}</span>
+              <span className="text-emerald-400 font-semibold">(+2.1% Gain)</span>
             </div>
           </div>
 
           {/* MRR */}
-          <div className="glass-panel p-5 rounded-3xl border border-slate-800 space-y-2">
-            <div className="flex items-center justify-between text-xs text-slate-400">
+          <div className="glass-panel p-5 rounded-3xl border border-white/[0.08] shadow-glass space-y-3">
+            <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
               <span>Mean Reciprocal Rank</span>
-              <span className="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-bold">
-                Top Hit Position
+              <span className="px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 font-bold">
+                Top Hit
               </span>
             </div>
-            <div className="text-3xl font-extrabold text-cyan-300 font-mono">
+            <div className="text-3xl sm:text-4xl font-extrabold text-cyan-300 font-mono tracking-tight">
               {report.modes.bm25.mrr.toFixed(4)}
             </div>
-            <div className="text-xs text-slate-400 pt-1">
-              First relevant product appears at average rank ~1.1
+            <div className="text-xs text-slate-400 pt-1 font-mono">
+              Avg rank of 1st relevant doc: <span className="text-white font-bold">~1.1</span>
             </div>
           </div>
 
           {/* Average Latency */}
-          <div className="glass-panel p-5 rounded-3xl border border-slate-800 space-y-2">
-            <div className="flex items-center justify-between text-xs text-slate-400">
+          <div className="glass-panel p-5 rounded-3xl border border-white/[0.08] shadow-glass space-y-3">
+            <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
               <span>Average Latency</span>
-              <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
-                Target: ≤ 500ms
+              <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
+                SLA: ≤ 500ms
               </span>
             </div>
-            <div className="text-3xl font-extrabold text-emerald-400 font-mono">
-              {report.modes.bm25.avg_latency_ms.toFixed(2)} <span className="text-lg">ms</span>
+            <div className="text-3xl sm:text-4xl font-extrabold text-emerald-400 font-mono tracking-tight flex items-baseline space-x-1">
+              <span>{report.modes.bm25.avg_latency_ms.toFixed(2)}</span>
+              <span className="text-base text-slate-400">ms</span>
             </div>
             <div className="flex items-center space-x-1.5 text-xs text-emerald-400 font-medium pt-1">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              <span>100x faster than 500ms SLA</span>
+              <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0" />
+              <span>100x Faster than SLA Target</span>
             </div>
           </div>
         </div>
       )}
 
-      {/* Visual Charts: Recharts Comparison */}
+      {/* Visual Charts: Recharts Comparison & Parameter Inspector */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Grouped Bar Chart */}
-        <div className="lg:col-span-2 glass-panel p-6 rounded-3xl border border-slate-800 space-y-4">
+        <div className="lg:col-span-2 glass-panel p-6 rounded-3xl border border-white/[0.08] shadow-glass space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-base text-white flex items-center space-x-2">
               <BarChart3 className="h-4 w-4 text-indigo-400" />
@@ -219,34 +222,43 @@ export const EvaluationPage: React.FC = () => {
             <span className="text-xs font-mono text-slate-400">k = 10 cutoff</span>
           </div>
 
-          <div className="h-72 w-full">
+          <div className="h-80 w-full pt-2">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 20, right: 20, left: -10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <XAxis dataKey="metric" stroke="#94a3b8" tick={{ fill: "#94a3b8", fontSize: 12 }} />
-                <YAxis domain={[0, 1]} stroke="#94a3b8" tick={{ fill: "#94a3b8", fontSize: 12 }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                <XAxis
+                  dataKey="metric"
+                  stroke="#94a3b8"
+                  tick={{ fill: "#94a3b8", fontSize: 12, fontFamily: "JetBrains Mono" }}
+                />
+                <YAxis
+                  domain={[0, 1]}
+                  stroke="#94a3b8"
+                  tick={{ fill: "#94a3b8", fontSize: 12, fontFamily: "JetBrains Mono" }}
+                />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#0f172a",
-                    borderColor: "#334155",
-                    borderRadius: "12px",
+                    backgroundColor: "#0b0f19",
+                    borderColor: "rgba(255, 255, 255, 0.1)",
+                    borderRadius: "16px",
                     color: "#fff",
                     fontSize: "12px",
-                    fontFamily: "monospace",
+                    fontFamily: "JetBrains Mono",
+                    boxShadow: "0 10px 30px -5px rgba(0, 0, 0, 0.8)",
                   }}
                 />
-                <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }} />
-                <Bar dataKey="Keyword" fill="#06b6d4" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="TF-IDF" fill="#a855f7" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="BM25" fill="#10b981" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Hybrid" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "12px", fontFamily: "JetBrains Mono" }} />
+                <Bar dataKey="Keyword" fill="#06b6d4" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="TF-IDF" fill="#a855f7" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="BM25" fill="#10b981" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="Hybrid" fill="#f59e0b" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Hyperparameter & Weights Inspector */}
-        <div className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-4 flex flex-col justify-between">
+        <div className="glass-panel p-6 rounded-3xl border border-white/[0.08] shadow-glass space-y-4 flex flex-col justify-between">
           <div>
             <h3 className="font-bold text-base text-white flex items-center space-x-2 mb-4">
               <Sliders className="h-4 w-4 text-indigo-400" />
@@ -254,59 +266,59 @@ export const EvaluationPage: React.FC = () => {
             </h3>
 
             <div className="space-y-3 text-xs">
-              <div className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/80">
+              <div className="p-3.5 rounded-2xl bg-surface-muted/80 border border-white/[0.06]">
                 <div className="flex justify-between font-mono mb-1">
-                  <span className="text-slate-400">BM25 Term Saturation (k1)</span>
+                  <span className="text-slate-400">BM25 Term Saturation ($k_1$)</span>
                   <span className="text-emerald-400 font-bold">1.50</span>
                 </div>
                 <p className="text-[11px] text-slate-500">Controls sub-linear term frequency scaling</p>
               </div>
 
-              <div className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/80">
+              <div className="p-3.5 rounded-2xl bg-surface-muted/80 border border-white/[0.06]">
                 <div className="flex justify-between font-mono mb-1">
-                  <span className="text-slate-400">Doc Length Normalization (b)</span>
+                  <span className="text-slate-400">Length Normalization ($b$)</span>
                   <span className="text-emerald-400 font-bold">0.75</span>
                 </div>
-                <p className="text-[11px] text-slate-500">Penalizes verbose descriptions</p>
+                <p className="text-[11px] text-slate-500">Penalizes verbose product descriptions</p>
               </div>
 
-              <div className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/80">
+              <div className="p-3.5 rounded-2xl bg-surface-muted/80 border border-white/[0.06]">
                 <div className="flex justify-between font-mono mb-1">
-                  <span className="text-slate-400">Hybrid Convex Weight (α)</span>
+                  <span className="text-slate-400">Hybrid Convex Weight ($\alpha$)</span>
                   <span className="text-amber-400 font-bold">0.80</span>
                 </div>
-                <p className="text-[11px] text-slate-500">80% BM25 + 20% Normalized Field Bonus</p>
+                <p className="text-[11px] text-slate-500">80% BM25 + 20% Field Exact Bonus</p>
               </div>
 
-              <div className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/80">
-                <div className="text-slate-400 font-mono mb-1">Field Weights Matrix</div>
+              <div className="p-3.5 rounded-2xl bg-surface-muted/80 border border-white/[0.06]">
+                <div className="text-slate-400 font-mono mb-1.5">Corpus Field Multipliers</div>
                 <div className="grid grid-cols-2 gap-1.5 font-mono text-[11px] text-slate-300">
-                  <span>Name: <b>3.0x</b></span>
-                  <span>Category: <b>2.0x</b></span>
-                  <span>Description: <b>1.5x</b></span>
-                  <span>Specs: <b>1.0x</b></span>
+                  <span>Name: <b className="text-indigo-300">3.0x</b></span>
+                  <span>Category: <b className="text-indigo-300">2.0x</b></span>
+                  <span>Desc: <b className="text-indigo-300">1.5x</b></span>
+                  <span>Specs: <b className="text-indigo-300">1.0x</b></span>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="p-3 rounded-2xl bg-indigo-950/30 border border-indigo-800/40 text-[11px] text-indigo-300 flex items-center space-x-2">
+          <div className="p-3.5 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 text-[11px] text-indigo-200 flex items-center space-x-2">
             <Award className="h-4 w-4 flex-shrink-0 text-indigo-400" />
-            <span>Optimal $k_1=1.5, b=0.75$ confirmed via 2D Grid Search</span>
+            <span>Optimal $k_1=1.5, b=0.75$ verified via Cranfield grid evaluation.</span>
           </div>
         </div>
       </div>
 
       {/* Per-Query Breakdown Matrix Table */}
       {report && (
-        <div className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-4">
+        <div className="glass-panel p-6 rounded-3xl border border-white/[0.08] shadow-glass space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h3 className="font-bold text-base text-white">
                 Per-Query Benchmark NDCG@10 Matrix ({queriesList.length} Queries)
               </h3>
               <p className="text-xs text-slate-400">
-                Detailed comparison of ranking quality across the Cranfield test collection.
+                Granular ranking quality scores across the Cranfield test collection.
               </p>
             </div>
 
@@ -316,53 +328,53 @@ export const EvaluationPage: React.FC = () => {
                 type="text"
                 value={filterQuery}
                 onChange={(e) => setFilterQuery(e.target.value)}
-                placeholder="Filter queries..."
-                className="w-full pl-9 pr-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono"
+                placeholder="Filter benchmark queries..."
+                className="w-full pl-9 pr-3 py-1.5 bg-slate-950 border border-white/[0.08] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono"
               />
             </div>
           </div>
 
-          <div className="overflow-x-auto rounded-2xl border border-slate-800/80">
+          <div className="overflow-x-auto rounded-2xl border border-white/[0.08]">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-950/80 text-slate-400 font-semibold uppercase tracking-wider border-b border-slate-800">
+              <thead className="bg-slate-950/80 text-slate-400 font-mono font-bold uppercase tracking-wider border-b border-white/[0.08]">
                 <tr>
-                  <th className="py-3 px-4 w-12 font-mono">#</th>
+                  <th className="py-3 px-4 w-12">#</th>
                   <th className="py-3 px-4">Evaluation Query Text</th>
-                  <th className="py-3 px-4 font-mono text-cyan-400">Keyword</th>
-                  <th className="py-3 px-4 font-mono text-purple-400">TF-IDF</th>
-                  <th className="py-3 px-4 font-mono text-emerald-400">BM25</th>
-                  <th className="py-3 px-4 font-mono text-amber-400">Hybrid</th>
-                  <th className="py-3 px-4 text-right">Winning Algorithm</th>
+                  <th className="py-3 px-4 text-cyan-400">Keyword</th>
+                  <th className="py-3 px-4 text-purple-400">TF-IDF</th>
+                  <th className="py-3 px-4 text-emerald-400">BM25</th>
+                  <th className="py-3 px-4 text-amber-400">Hybrid</th>
+                  <th className="py-3 px-4 text-right">Top Performing Ranker</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 bg-slate-950/40">
+              <tbody className="divide-y divide-white/[0.06] bg-slate-950/40 font-mono">
                 {queriesList.map((row) => {
                   return (
-                    <tr key={row.id} className="hover:bg-slate-800/20 transition-colors">
-                      <td className="py-2.5 px-4 font-mono text-slate-500">{row.id}</td>
-                      <td className="py-2.5 px-4 font-medium text-slate-200">
+                    <tr key={row.id} className="hover:bg-white/[0.02] transition-colors">
+                      <td className="py-2.5 px-4 text-slate-500 font-bold">{row.id}</td>
+                      <td className="py-2.5 px-4 font-sans font-medium text-slate-200">
                         "{row.query}"
                       </td>
-                      <td className="py-2.5 px-4 font-mono text-slate-300">
+                      <td className="py-2.5 px-4 text-slate-300">
                         {row.keyword.toFixed(4)}
                       </td>
-                      <td className="py-2.5 px-4 font-mono text-slate-300">
+                      <td className="py-2.5 px-4 text-slate-300">
                         {row.tfidf.toFixed(4)}
                       </td>
-                      <td className="py-2.5 px-4 font-mono text-emerald-300 font-bold">
+                      <td className="py-2.5 px-4 text-emerald-300 font-bold">
                         {row.bm25.toFixed(4)}
                       </td>
-                      <td className="py-2.5 px-4 font-mono text-amber-300">
+                      <td className="py-2.5 px-4 text-amber-300">
                         {row.hybrid.toFixed(4)}
                       </td>
                       <td className="py-2.5 px-4 text-right">
                         <span
-                          className={`inline-block text-[10px] font-bold font-mono px-2 py-0.5 rounded uppercase ${
+                          className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-md uppercase border ${
                             row.winner === "bm25"
-                              ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                              ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
                               : row.winner === "tfidf"
-                              ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
-                              : "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30"
+                              ? "bg-purple-500/20 text-purple-300 border-purple-500/30"
+                              : "bg-cyan-500/20 text-cyan-300 border-cyan-500/30"
                           }`}
                         >
                           {row.winner}

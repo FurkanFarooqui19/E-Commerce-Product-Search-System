@@ -1,4 +1,5 @@
-import { Star, ChevronRight } from "lucide-react";
+import React from "react";
+import { Star, ChevronRight, CheckCircle2, AlertTriangle, Layers } from "lucide-react";
 import type { Product, SearchResultItem } from "../types";
 import { getProductImage, FALLBACK_IMAGE } from "../utils/productImages";
 
@@ -10,7 +11,7 @@ interface ProductCardProps {
 export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
   const { rank, score, product } = item;
 
-  // Format relevance score as a clean percentage or decimal score
+  // Format relevance score percentage
   const scorePercent = Math.min(Math.round(score * 100), 100);
 
   // Score color badge
@@ -18,16 +19,33 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
     if (scorePercent >= 80) {
       return {
         bg: "bg-emerald-500/10 border-emerald-500/30 text-emerald-400",
+        indicator: "bg-emerald-400",
       };
     } else if (scorePercent >= 50) {
       return {
-        bg: "bg-indigo-500/10 border-indigo-500/30 text-indigo-400",
+        bg: "bg-indigo-500/10 border-indigo-500/30 text-indigo-300",
+        indicator: "bg-indigo-400",
       };
     } else {
       return {
         bg: "bg-amber-500/10 border-amber-500/30 text-amber-400",
+        indicator: "bg-amber-400",
       };
     }
+  };
+
+  // Rank badge styling for Top 3 vs standard
+  const getRankBadgeStyle = (r: number) => {
+    if (r === 1) {
+      return "bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border-amber-500/40 text-amber-300 font-bold shadow-sm shadow-amber-500/20";
+    }
+    if (r === 2) {
+      return "bg-gradient-to-r from-slate-300/20 to-slate-400/20 border-slate-300/40 text-slate-200 font-bold";
+    }
+    if (r === 3) {
+      return "bg-gradient-to-r from-amber-700/20 to-orange-700/20 border-amber-700/40 text-orange-300 font-bold";
+    }
+    return "bg-slate-900 border-white/[0.08] text-slate-400 font-medium";
   };
 
   const badge = getScoreBadge();
@@ -36,30 +54,37 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
   return (
     <div
       onClick={() => onSelect(product)}
-      className="glass-panel glass-panel-hover rounded-2xl p-4 sm:p-5 cursor-pointer flex flex-col justify-between group transition-all duration-300 overflow-hidden"
+      className="group relative glass-panel glass-panel-hover rounded-2xl p-4 sm:p-5 cursor-pointer flex flex-col justify-between transition-all duration-300 overflow-hidden"
     >
+      {/* Top subtle highlight line */}
+      <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
       <div>
         {/* Top Meta: Rank & Score Gauge */}
         <div className="flex items-center justify-between gap-2 mb-3">
           <div className="flex items-center space-x-2">
-            <span className="flex items-center justify-center h-6 w-6 rounded-md bg-slate-800 border border-slate-700 text-xs font-mono font-bold text-slate-300">
+            <span
+              className={`flex items-center justify-center h-6 px-2 rounded-lg border text-xs font-mono tracking-tight ${getRankBadgeStyle(
+                rank
+              )}`}
+            >
               #{rank}
             </span>
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+            <span className="text-[11px] font-semibold tracking-wider text-slate-400 uppercase font-mono">
               {product.brand}
             </span>
           </div>
 
           <div
-            className={`flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full border text-xs font-mono font-semibold ${badge.bg}`}
+            className={`flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full border text-[11px] font-mono font-semibold ${badge.bg}`}
           >
-            <span>Score</span>
-            <span>{score.toFixed(4)}</span>
+            <span className={`h-1.5 w-1.5 rounded-full ${badge.indicator}`}></span>
+            <span>Score: {score.toFixed(4)}</span>
           </div>
         </div>
 
-        {/* Product Image Container */}
-        <div className="relative w-full h-44 mb-3.5 rounded-xl bg-slate-950/70 border border-slate-800/80 overflow-hidden flex items-center justify-center p-2 group-hover:border-indigo-500/40 transition-all">
+        {/* Product Image Showcase Container */}
+        <div className="relative w-full h-44 mb-3.5 rounded-xl bg-slate-950/80 border border-white/[0.06] overflow-hidden flex items-center justify-center p-3 group-hover:border-indigo-500/30 transition-all duration-300">
           <img
             src={imageUrl}
             alt={product.name}
@@ -67,12 +92,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
               e.currentTarget.src = FALLBACK_IMAGE;
             }}
             loading="lazy"
-            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300 rounded-lg"
+            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300 rounded-lg drop-shadow-md"
           />
+
+          {/* Stock badge overlay */}
+          <div className="absolute bottom-2 left-2">
+            {product.stock > 10 ? (
+              <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md bg-slate-950/80 backdrop-blur-md border border-white/[0.06] text-[10px] text-emerald-400 font-mono">
+                <CheckCircle2 className="h-2.5 w-2.5" />
+                <span>In Stock ({product.stock})</span>
+              </span>
+            ) : (
+              <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md bg-slate-950/80 backdrop-blur-md border border-amber-500/30 text-[10px] text-amber-400 font-mono">
+                <AlertTriangle className="h-2.5 w-2.5" />
+                <span>Low Stock ({product.stock})</span>
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Product Title */}
-        <h3 className="font-semibold text-sm sm:text-base text-slate-100 group-hover:text-indigo-300 transition-colors line-clamp-2 mb-1.5 leading-snug">
+        <h3 className="font-semibold text-sm sm:text-base text-slate-100 group-hover:text-indigo-300 transition-colors line-clamp-2 mb-1.5 leading-snug tracking-tight">
           {product.name}
         </h3>
 
@@ -87,7 +127,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
             {product.specifications.slice(0, 2).map((spec, i) => (
               <span
                 key={i}
-                className="text-[10px] px-2 py-0.5 rounded-md bg-slate-800/80 border border-slate-700/60 text-slate-300 font-mono"
+                className="text-[10px] px-2 py-0.5 rounded-md bg-surface-muted border border-white/[0.06] text-slate-300 font-mono"
               >
                 <span className="text-slate-500">{spec.key}:</span> {spec.value}
               </span>
@@ -96,24 +136,25 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
         )}
       </div>
 
-      {/* Card Footer: Price, Rating, Category */}
-      <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between mt-1">
+      {/* Card Footer: Price, Rating, Category & Inspect */}
+      <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between mt-1">
         <div>
-          <div className="text-[11px] text-slate-400 font-medium">
-            {product.category?.name || "General"}
+          <div className="text-[10px] text-slate-500 font-mono uppercase tracking-wider flex items-center space-x-1">
+            <Layers className="h-2.5 w-2.5" />
+            <span>{product.category?.name || "General"}</span>
           </div>
-          <div className="text-base sm:text-lg font-bold text-slate-100 font-mono">
+          <div className="text-base sm:text-lg font-bold text-white font-mono tracking-tight">
             ₹{product.price.toLocaleString("en-IN")}
           </div>
         </div>
 
         <div className="flex items-center space-x-2">
-          <div className="flex items-center space-x-1 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-lg text-xs font-semibold text-amber-300">
-            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+          <div className="flex items-center space-x-1 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-lg text-xs font-semibold text-amber-300 font-mono">
+            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
             <span>{product.rating.toFixed(1)}</span>
           </div>
 
-          <div className="h-7 w-7 rounded-lg bg-slate-800 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all text-slate-400">
+          <div className="h-7 w-7 rounded-lg bg-surface-muted border border-white/[0.06] flex items-center justify-center group-hover:bg-indigo-600 group-hover:border-indigo-500 group-hover:text-white transition-all text-slate-400 shadow-sm">
             <ChevronRight className="h-4 w-4" />
           </div>
         </div>
