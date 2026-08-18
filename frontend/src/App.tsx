@@ -27,13 +27,13 @@ export function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 flex flex-col justify-between selection:bg-indigo-500/30 selection:text-indigo-200 relative overflow-x-hidden">
-      {/* Background ambient lighting and subtle developer grid */}
+    <div className="min-h-screen bg-background text-slate-100 flex flex-col justify-between selection:bg-indigo-500/30 selection:text-indigo-200 relative overflow-x-hidden">
+      {/* Subtle ambient lighting mesh */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 -right-40 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 left-1/3 w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-3xl" />
-        <div className="absolute inset-0 subtle-grid opacity-70" />
+        <div className="absolute -top-40 -left-40 w-[600px] h-[600px] bg-indigo-600/12 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 -right-40 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 left-1/3 w-[600px] h-[600px] bg-cyan-600/10 rounded-full blur-3xl" />
+        <div className="absolute inset-0 subtle-grid opacity-60" />
       </div>
 
       <div className="relative z-10 flex flex-col flex-1">
@@ -49,13 +49,13 @@ export function App() {
         </main>
 
         {/* Developer Footer */}
-        <footer className="w-full border-t border-white/[0.08] bg-[#030712]/80 backdrop-blur-xl py-6 mt-16 text-xs text-slate-500">
+        <footer className="w-full border-t border-border bg-surface-well/80 backdrop-blur-xl py-6 mt-16 text-xs text-slate-400">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center space-x-2">
               <Cpu className="h-4 w-4 text-indigo-400" />
-              <span className="font-semibold text-slate-300">SearchForge Engine</span>
+              <span className="font-display font-bold text-slate-200">SearchForge Engine</span>
               <span>•</span>
-              <span className="font-mono text-slate-400">Classical Information Retrieval & E-Commerce Search</span>
+              <span className="font-sans text-slate-400">Classical Information Retrieval & E-Commerce Search</span>
             </div>
 
             <div className="flex flex-wrap items-center justify-center sm:justify-end gap-3 font-mono text-[11px]">

@@ -106,32 +106,35 @@ export const SearchPage: React.FC = () => {
   }, [query]);
 
   // Execute Search
-  const handleSearch = React.useCallback(async (pageNum: number = 1, explicitQuery?: string) => {
-    const q = explicitQuery !== undefined ? explicitQuery : query;
-    if (!q.trim()) return;
-    setLoading(true);
-    setError(null);
-    setShowSuggestions(false);
+  const handleSearch = React.useCallback(
+    async (pageNum: number = 1, explicitQuery?: string) => {
+      const q = explicitQuery !== undefined ? explicitQuery : query;
+      if (!q.trim()) return;
+      setLoading(true);
+      setError(null);
+      setShowSuggestions(false);
 
-    try {
-      const data = await searchProducts({
-        q,
-        mode,
-        category: selectedCategory || undefined,
-        min_price: minPrice,
-        max_price: maxPrice,
-        page: pageNum,
-        page_size: 12,
-      });
-      setSearchResponse(data);
-      setPage(pageNum);
-    } catch (err: any) {
-      setError(err.message || "Search failed");
-      setSearchResponse(null);
-    } finally {
-      setLoading(false);
-    }
-  }, [query, mode, selectedCategory, minPrice, maxPrice]);
+      try {
+        const data = await searchProducts({
+          q,
+          mode,
+          category: selectedCategory || undefined,
+          min_price: minPrice,
+          max_price: maxPrice,
+          page: pageNum,
+          page_size: 12,
+        });
+        setSearchResponse(data);
+        setPage(pageNum);
+      } catch (err: any) {
+        setError(err.message || "Search failed");
+        setSearchResponse(null);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [query, mode, selectedCategory, minPrice, maxPrice]
+  );
 
   // Trigger search on filter / mode changes
   useEffect(() => {
@@ -163,22 +166,22 @@ export const SearchPage: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* ── Search Hero & Raycast-Style Spotlight Bar ── */}
       <div className="relative z-30 max-w-3xl mx-auto text-center space-y-4">
-        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-mono font-semibold text-indigo-400">
+        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-xs font-mono font-semibold text-indigo-300">
           <Sparkles className="h-3.5 w-3.5" />
           <span>Vector & Classical BM25 Information Retrieval</span>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold text-white tracking-tight leading-tight">
           Search the catalog with{" "}
-          <span className="bg-gradient-to-r from-indigo-400 via-purple-300 to-cyan-400 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-indigo-400 via-purple-300 to-cyan-300 bg-clip-text text-transparent">
             sub-millisecond
           </span>{" "}
           precision
         </h1>
 
-        {/* Raycast / Linear Spotlight Search Input */}
+        {/* Spotlight Search Input */}
         <div className="relative pt-2">
-          <div className="relative flex items-center shadow-glass-lg rounded-2xl overflow-hidden border border-white/[0.12] bg-[#0b0f19]/90 focus-within:border-indigo-500/80 focus-within:ring-2 focus-within:ring-indigo-500/30 transition-all duration-300">
+          <div className="relative flex items-center shadow-glass-lg rounded-2xl overflow-hidden border border-border-strong bg-surface-well/90 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/30 transition-all duration-300">
             <div className="pl-4 text-slate-400 flex items-center space-x-2">
               <Search className="h-5 w-5 text-indigo-400" />
             </div>
@@ -194,7 +197,7 @@ export const SearchPage: React.FC = () => {
               onFocus={() => setShowSuggestions(true)}
               onKeyDown={handleKeyDown}
               placeholder="Search by keyword, attribute, price (e.g. 'wireless headphones under 3000')..."
-              className="w-full py-4 px-3 bg-transparent text-sm sm:text-base text-white placeholder-slate-500 focus:outline-none font-medium"
+              className="w-full py-4 px-3 bg-transparent text-sm sm:text-base text-white placeholder-slate-400 focus:outline-none font-sans font-medium"
             />
 
             {query && (
@@ -203,7 +206,7 @@ export const SearchPage: React.FC = () => {
                   setQuery("");
                   searchInputRef.current?.focus();
                 }}
-                className="p-1.5 mr-1 text-slate-500 hover:text-white rounded-lg transition-colors"
+                className="p-1.5 mr-1 text-slate-400 hover:text-white rounded-lg transition-colors"
                 title="Clear input"
               >
                 <X className="h-4 w-4" />
@@ -213,7 +216,7 @@ export const SearchPage: React.FC = () => {
             <button
               onClick={() => handleSearch(1)}
               disabled={loading}
-              className="m-1.5 px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center space-x-1.5 disabled:opacity-50 flex-shrink-0"
+              className="m-1.5 px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white text-xs font-display font-bold rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center space-x-1.5 disabled:opacity-50 flex-shrink-0"
             >
               {loading ? (
                 <RefreshCw className="h-4 w-4 animate-spin" />
@@ -230,13 +233,13 @@ export const SearchPage: React.FC = () => {
           {showSuggestions && suggestions.length > 0 && (
             <div
               ref={dropdownRef}
-              className="absolute left-0 right-0 top-full mt-2 bg-[#0b0f19] border border-white/[0.1] rounded-2xl shadow-glass-lg overflow-hidden z-50 text-left backdrop-blur-xl animate-in fade-in slide-in-from-top-2 duration-200"
+              className="absolute left-0 right-0 top-full mt-2 bg-surface-well border border-border-strong rounded-2xl shadow-glass-lg overflow-hidden z-50 text-left backdrop-blur-xl animate-in fade-in slide-in-from-top-2 duration-200"
             >
-              <div className="px-3.5 py-2 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 border-b border-white/[0.06] flex items-center justify-between">
+              <div className="px-3.5 py-2 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 border-b border-border flex items-center justify-between">
                 <span>Inverted Index Suggestions</span>
                 <span className="text-indigo-400">Press Enter</span>
               </div>
-              <ul className="divide-y divide-white/[0.04]">
+              <ul className="divide-y divide-border">
                 {suggestions.map((item, idx) => (
                   <li
                     key={idx}
@@ -257,7 +260,7 @@ export const SearchPage: React.FC = () => {
 
         {/* Quick Example Query Pills */}
         <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1 text-xs">
-          <span className="text-slate-500 font-mono text-[11px] mr-1">Benchmarks:</span>
+          <span className="text-slate-400 font-mono text-[11px] mr-1">Benchmarks:</span>
           {EXAMPLE_QUERIES.map((example, i) => (
             <button
               key={i}
@@ -265,7 +268,7 @@ export const SearchPage: React.FC = () => {
                 setQuery(example);
                 handleSearch(1, example);
               }}
-              className="px-2.5 py-1 rounded-full bg-surface-muted border border-white/[0.06] text-slate-300 hover:text-white hover:border-indigo-500/40 hover:bg-slate-800 transition-all font-mono text-[11px]"
+              className="px-2.5 py-1 rounded-full bg-surface-muted border border-border text-slate-300 hover:text-white hover:border-indigo-500/50 hover:bg-surface-subtle transition-all font-mono text-[11px]"
             >
               {example}
             </button>
@@ -278,27 +281,27 @@ export const SearchPage: React.FC = () => {
         <div className="max-w-4xl mx-auto p-4 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 flex flex-wrap items-center justify-between gap-3 text-xs shadow-glow">
           <div className="flex items-center space-x-2">
             <Sparkles className="h-4 w-4 text-indigo-400 flex-shrink-0 animate-pulse" />
-            <span className="font-bold text-indigo-200">NL Parser Active:</span>
-            <span className="text-slate-300">Extracted structured constraints automatically:</span>
+            <span className="font-display font-bold text-indigo-200">NL Parser Active:</span>
+            <span className="text-slate-300 font-sans">Extracted structured constraints automatically:</span>
           </div>
           <div className="flex flex-wrap items-center gap-2 font-mono text-[11px]">
             {nlData.category_hint && (
-              <span className="px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">
+              <span className="px-2.5 py-1 rounded-lg bg-indigo-500/25 text-indigo-200 border border-indigo-500/35 font-semibold">
                 Category: <b>{nlData.category_hint}</b>
               </span>
             )}
             {nlData.max_price !== null && (
-              <span className="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
+              <span className="px-2.5 py-1 rounded-lg bg-emerald-500/25 text-emerald-200 border border-emerald-500/35 font-semibold">
                 Max Price: <b>₹{nlData.max_price}</b>
               </span>
             )}
             {nlData.min_price !== null && (
-              <span className="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-semibold">
+              <span className="px-2.5 py-1 rounded-lg bg-cyan-500/25 text-cyan-200 border border-cyan-500/35 font-semibold">
                 Min Price: <b>₹{nlData.min_price}</b>
               </span>
             )}
             {nlData.clean_query && (
-              <span className="px-2.5 py-1 rounded-lg bg-slate-900 border border-white/[0.08] text-slate-300">
+              <span className="px-2.5 py-1 rounded-lg bg-surface-well border border-border text-slate-300">
                 Clean Query: <b>"{nlData.clean_query}"</b>
               </span>
             )}
@@ -309,7 +312,7 @@ export const SearchPage: React.FC = () => {
       {/* ── Main Content: Sidebar Filters & Results Showcase ── */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
         {/* Left Sidebar: Controls & Filters */}
-        <div className="space-y-6 glass-panel rounded-3xl p-5 border border-white/[0.08] shadow-glass">
+        <div className="space-y-6 glass-panel rounded-3xl p-5 border border-border shadow-glass">
           {/* Ranking Algorithm Switcher */}
           <div>
             <div className="flex items-center justify-between mb-3">
@@ -317,7 +320,7 @@ export const SearchPage: React.FC = () => {
                 <Zap className="h-3.5 w-3.5 text-indigo-400" />
                 <span>Ranking Algorithm</span>
               </label>
-              <span className="text-[10px] font-mono text-slate-500">4 Engine Models</span>
+              <span className="text-[10px] font-mono text-slate-400">4 Engine Models</span>
             </div>
 
             <div className="space-y-2">
@@ -358,19 +361,19 @@ export const SearchPage: React.FC = () => {
                     onClick={() => setMode(id as RankingMode)}
                     className={`w-full text-left p-3 rounded-2xl border transition-all duration-200 ${
                       isSelected
-                        ? "bg-indigo-600/15 border-indigo-500/80 text-white shadow-sm shadow-indigo-600/20"
-                        : "bg-surface-muted/60 border-white/[0.06] text-slate-400 hover:text-slate-200 hover:border-white/[0.12]"
+                        ? "bg-indigo-600/20 border-indigo-500 text-white shadow-sm shadow-indigo-600/20"
+                        : "bg-surface-muted border-border text-slate-300 hover:text-white hover:border-border-strong hover:bg-surface-subtle"
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className={`text-xs font-bold ${isSelected ? "text-white" : ""}`}>
+                      <span className={`text-xs font-display font-bold ${isSelected ? "text-white" : "text-slate-200"}`}>
                         {name}
                       </span>
-                      <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-950 border border-white/[0.06] ${accent}`}>
+                      <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-well border border-border ${accent}`}>
                         {tag}
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-500 leading-tight">{desc}</p>
+                    <p className="text-[11px] text-slate-400 leading-tight font-sans">{desc}</p>
                   </button>
                 );
               })}
@@ -378,7 +381,7 @@ export const SearchPage: React.FC = () => {
           </div>
 
           {/* Category Filter */}
-          <div className="pt-5 border-t border-white/[0.08]">
+          <div className="pt-5 border-t border-border">
             <div className="flex items-center justify-between mb-3">
               <label className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300 flex items-center space-x-1.5">
                 <Tag className="h-3.5 w-3.5 text-indigo-400" />
@@ -398,12 +401,12 @@ export const SearchPage: React.FC = () => {
                 onClick={() => setSelectedCategory("")}
                 className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between transition-colors ${
                   !selectedCategory
-                    ? "bg-indigo-600 text-white font-semibold"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]"
+                    ? "bg-indigo-600 text-white font-semibold shadow-sm"
+                    : "text-slate-300 hover:text-white hover:bg-surface-muted"
                 }`}
               >
-                <span>All Categories</span>
-                <span className="text-[11px] font-mono opacity-70">510</span>
+                <span className="font-sans">All Categories</span>
+                <span className="text-[11px] font-mono opacity-80">510</span>
               </button>
               {categories.map((cat) => {
                 const isSelected = selectedCategory === cat.slug;
@@ -413,12 +416,12 @@ export const SearchPage: React.FC = () => {
                     onClick={() => setSelectedCategory(isSelected ? "" : cat.slug)}
                     className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between transition-colors ${
                       isSelected
-                        ? "bg-indigo-600/20 text-indigo-300 border border-indigo-500/40 font-semibold"
-                        : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]"
+                        ? "bg-indigo-600/25 text-indigo-200 border border-indigo-500/40 font-semibold"
+                        : "text-slate-300 hover:text-white hover:bg-surface-muted"
                     }`}
                   >
-                    <span className="truncate mr-2">{cat.name}</span>
-                    <span className="text-[11px] font-mono opacity-70">{cat.product_count}</span>
+                    <span className="truncate mr-2 font-sans">{cat.name}</span>
+                    <span className="text-[11px] font-mono opacity-80">{cat.product_count}</span>
                   </button>
                 );
               })}
@@ -426,7 +429,7 @@ export const SearchPage: React.FC = () => {
           </div>
 
           {/* Price Range Filter */}
-          <div className="pt-5 border-t border-white/[0.08]">
+          <div className="pt-5 border-t border-border">
             <label className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300 block mb-3">
               Price Range (₹)
             </label>
@@ -446,7 +449,7 @@ export const SearchPage: React.FC = () => {
                     className={`px-2 py-1.5 rounded-lg text-[10px] font-mono text-center border transition-all ${
                       isPresetActive
                         ? "bg-indigo-600/30 border-indigo-500 text-indigo-200 font-bold"
-                        : "bg-surface-muted border-white/[0.06] text-slate-400 hover:text-slate-200 hover:border-white/[0.12]"
+                        : "bg-surface-muted border-border text-slate-300 hover:text-white hover:border-border-strong hover:bg-surface-subtle"
                     }`}
                   >
                     {preset.label}
@@ -457,7 +460,7 @@ export const SearchPage: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-2 mb-3">
               <div>
-                <span className="text-[10px] text-slate-500 font-mono mb-1 block">Min (₹)</span>
+                <span className="text-[10px] text-slate-400 font-mono mb-1 block">Min (₹)</span>
                 <input
                   type="number"
                   value={minPrice !== undefined ? minPrice : ""}
@@ -465,11 +468,11 @@ export const SearchPage: React.FC = () => {
                     setMinPrice(e.target.value ? Number(e.target.value) : undefined)
                   }
                   placeholder="0"
-                  className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 font-mono"
+                  className="w-full bg-surface-well border border-border rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono"
                 />
               </div>
               <div>
-                <span className="text-[10px] text-slate-500 font-mono mb-1 block">Max (₹)</span>
+                <span className="text-[10px] text-slate-400 font-mono mb-1 block">Max (₹)</span>
                 <input
                   type="number"
                   value={maxPrice !== undefined ? maxPrice : ""}
@@ -477,13 +480,13 @@ export const SearchPage: React.FC = () => {
                     setMaxPrice(e.target.value ? Number(e.target.value) : undefined)
                   }
                   placeholder="150000"
-                  className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 font-mono"
+                  className="w-full bg-surface-well border border-border rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono"
                 />
               </div>
             </div>
             <button
               onClick={() => handleSearch(1)}
-              className="w-full py-2 bg-surface-muted hover:bg-slate-800 border border-white/[0.08] text-slate-200 text-xs font-semibold rounded-xl transition-colors shadow-sm"
+              className="w-full py-2 bg-surface-muted hover:bg-surface-subtle border border-border text-slate-200 text-xs font-display font-semibold rounded-xl transition-colors shadow-sm"
             >
               Apply Filter
             </button>
@@ -492,7 +495,7 @@ export const SearchPage: React.FC = () => {
           {/* Reset All */}
           <button
             onClick={handleResetFilters}
-            className="w-full py-2.5 rounded-xl border border-white/[0.08] text-slate-400 hover:text-slate-200 hover:bg-white/[0.04] text-xs font-medium transition-colors flex items-center justify-center space-x-1.5"
+            className="w-full py-2.5 rounded-xl border border-border text-slate-400 hover:text-slate-200 hover:bg-surface-muted text-xs font-medium transition-colors flex items-center justify-center space-x-1.5"
           >
             <RefreshCw className="h-3.5 w-3.5" />
             <span>Reset All Filters</span>
@@ -503,19 +506,19 @@ export const SearchPage: React.FC = () => {
         <div className="lg:col-span-3 space-y-6">
           {/* Telemetry Header */}
           {searchResponse && (
-            <div className="glass-panel rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 text-xs border border-white/[0.08] shadow-glass">
+            <div className="glass-panel rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 text-xs border border-border shadow-glass">
               <div className="flex flex-wrap items-center gap-3">
-                <span className="font-bold text-white text-sm font-mono">
+                <span className="font-display font-bold text-white text-sm">
                   {searchResponse.pagination.total_results} Products Found
                 </span>
                 <span className="text-slate-600">•</span>
-                <div className="flex items-center space-x-1.5 text-cyan-400 font-mono">
+                <div className="flex items-center space-x-1.5 text-cyan-300 font-mono">
                   <Clock className="h-3.5 w-3.5" />
                   <span className="font-bold">{searchResponse.metadata.latency_ms.toFixed(2)} ms</span>
                 </div>
                 <span className="text-slate-600">•</span>
-                <div className="flex items-center space-x-1.5 text-slate-400 font-mono text-[11px]">
-                  <Database className="h-3.5 w-3.5" />
+                <div className="flex items-center space-x-1.5 text-slate-300 font-mono text-[11px]">
+                  <Database className="h-3.5 w-3.5 text-slate-400" />
                   <span>{searchResponse.metadata.total_candidates} Scored</span>
                 </div>
               </div>
@@ -525,11 +528,11 @@ export const SearchPage: React.FC = () => {
                 {/* Tokens Pill */}
                 {searchResponse.query.processed_tokens.length > 0 && (
                   <div className="hidden sm:flex items-center space-x-1.5 overflow-x-auto">
-                    <span className="text-slate-500 font-mono text-[10px]">Stemmed:</span>
+                    <span className="text-slate-400 font-mono text-[10px]">Stemmed:</span>
                     {searchResponse.query.processed_tokens.map((token, idx) => (
                       <span
                         key={idx}
-                        className="px-2 py-0.5 rounded-md bg-surface-muted border border-white/[0.06] text-indigo-300 font-mono text-[10px]"
+                        className="px-2 py-0.5 rounded-md bg-surface-well border border-border text-indigo-300 font-mono text-[10px]"
                       >
                         {token}
                       </span>
@@ -538,12 +541,12 @@ export const SearchPage: React.FC = () => {
                 )}
 
                 {/* Grid / List View Toggle */}
-                <div className="flex items-center space-x-1 bg-surface-muted p-1 rounded-xl border border-white/[0.06]">
+                <div className="flex items-center space-x-1 bg-surface-muted p-1 rounded-xl border border-border">
                   <button
                     onClick={() => setViewMode("grid")}
                     className={`p-1.5 rounded-lg transition-colors ${
                       viewMode === "grid"
-                        ? "bg-indigo-600 text-white"
+                        ? "bg-indigo-600 text-white shadow-sm"
                         : "text-slate-400 hover:text-white"
                     }`}
                     title="Grid View"
@@ -554,7 +557,7 @@ export const SearchPage: React.FC = () => {
                     onClick={() => setViewMode("list")}
                     className={`p-1.5 rounded-lg transition-colors ${
                       viewMode === "list"
-                        ? "bg-indigo-600 text-white"
+                        ? "bg-indigo-600 text-white shadow-sm"
                         : "text-slate-400 hover:text-white"
                     }`}
                     title="Developer List View"
@@ -568,11 +571,11 @@ export const SearchPage: React.FC = () => {
 
           {/* Fallback Warning if triggered */}
           {searchResponse?.metadata.fallback_applied && (
-            <div className="p-4 rounded-2xl bg-amber-950/30 border border-amber-500/40 text-amber-300 text-xs flex items-center space-x-3">
+            <div className="p-4 rounded-2xl bg-amber-950/40 border border-amber-500/40 text-amber-200 text-xs flex items-center space-x-3">
               <ShieldAlert className="h-5 w-5 flex-shrink-0 text-amber-400" />
               <div>
-                <p className="font-bold">Zero Exact Matches — Fallback Scoring Applied</p>
-                <p className="text-amber-400/80 text-[11px] mt-0.5">
+                <p className="font-display font-bold text-amber-200">Zero Exact Matches — Fallback Scoring Applied</p>
+                <p className="text-amber-300/80 text-[11px] mt-0.5 font-sans">
                   The search engine relaxed strict conjuncts to match individual high-IDF terms from your query.
                 </p>
               </div>
@@ -582,8 +585,8 @@ export const SearchPage: React.FC = () => {
           {/* Error Message */}
           {error && (
             <div className="p-6 rounded-3xl bg-rose-950/30 border border-rose-800/50 text-rose-300 text-center space-y-2">
-              <p className="font-bold text-base">{error}</p>
-              <p className="text-xs text-rose-400">Please try adjusting your search terms or filters.</p>
+              <p className="font-display font-bold text-base">{error}</p>
+              <p className="text-xs text-rose-400 font-sans">Please try adjusting your search terms or filters.</p>
             </div>
           )}
 
@@ -593,12 +596,12 @@ export const SearchPage: React.FC = () => {
               {[...Array(6)].map((_, i) => (
                 <div
                   key={i}
-                  className="glass-panel rounded-2xl p-5 animate-skeleton space-y-4 border border-white/[0.06]"
+                  className="glass-panel rounded-2xl p-5 animate-skeleton space-y-4 border border-border"
                 >
-                  <div className="h-4 bg-white/[0.05] rounded w-1/3"></div>
-                  <div className="h-40 bg-white/[0.05] rounded-xl"></div>
-                  <div className="h-5 bg-white/[0.05] rounded w-3/4"></div>
-                  <div className="h-4 bg-white/[0.05] rounded w-1/2"></div>
+                  <div className="h-4 bg-white/[0.06] rounded w-1/3"></div>
+                  <div className="h-40 bg-white/[0.06] rounded-xl"></div>
+                  <div className="h-5 bg-white/[0.06] rounded w-3/4"></div>
+                  <div className="h-4 bg-white/[0.06] rounded w-1/2"></div>
                 </div>
               ))}
             </div>
@@ -619,13 +622,13 @@ export const SearchPage: React.FC = () => {
 
           {/* Results List View (Developer Dense Mode) */}
           {!loading && searchResponse && searchResponse.results.length > 0 && viewMode === "list" && (
-            <div className="glass-panel rounded-3xl overflow-hidden border border-white/[0.08]">
+            <div className="glass-panel rounded-3xl overflow-hidden border border-border shadow-glass">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-950/80 text-slate-400 font-mono font-bold uppercase tracking-wider border-b border-white/[0.08]">
+                  <thead className="bg-surface-well/90 text-slate-400 font-mono font-bold uppercase tracking-wider border-b border-border">
                     <tr>
                       <th className="py-3.5 px-4 w-12">Rank</th>
-                      <th className="py-3.5 px-4">Product Name</th>
+                      <th className="py-3.5 px-4 font-display">Product Name</th>
                       <th className="py-3.5 px-4 font-mono">Category</th>
                       <th className="py-3.5 px-4 font-mono">Score</th>
                       <th className="py-3.5 px-4 font-mono">Price</th>
@@ -633,7 +636,7 @@ export const SearchPage: React.FC = () => {
                       <th className="py-3.5 px-4 text-right">Inspect</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/[0.06] bg-slate-950/40">
+                  <tbody className="divide-y divide-border bg-surface-well/40">
                     {searchResponse.results.map((item) => {
                       const { rank, score, product } = item;
                       const imageUrl = getProductImage(product);
@@ -641,7 +644,7 @@ export const SearchPage: React.FC = () => {
                         <tr
                           key={product.id}
                           onClick={() => setSelectedProduct(product)}
-                          className="hover:bg-white/[0.02] cursor-pointer transition-colors"
+                          className="hover:bg-white/[0.04] cursor-pointer transition-colors"
                         >
                           <td className="py-3 px-4 font-mono font-bold text-slate-300">
                             #{rank}
@@ -654,19 +657,19 @@ export const SearchPage: React.FC = () => {
                                 onError={(e) => {
                                   e.currentTarget.src = FALLBACK_IMAGE;
                                 }}
-                                className="h-9 w-9 object-contain rounded-lg bg-slate-950 border border-white/[0.06] p-1 flex-shrink-0"
+                                className="h-9 w-9 object-contain rounded-lg bg-surface-well border border-border p-1 flex-shrink-0"
                               />
                               <div>
-                                <div className="font-semibold text-slate-100 line-clamp-1">
+                                <div className="font-display font-semibold text-slate-100 line-clamp-1">
                                   {product.name}
                                 </div>
-                                <div className="text-[11px] text-slate-500 font-mono">
+                                <div className="text-[11px] text-slate-400 font-mono">
                                   {product.brand} • Doc #{product.id}
                                 </div>
                               </div>
                             </div>
                           </td>
-                          <td className="py-3 px-4 text-slate-400 font-mono text-[11px]">
+                          <td className="py-3 px-4 text-slate-300 font-mono text-[11px]">
                             {product.category?.name || "General"}
                           </td>
                           <td className="py-3 px-4 font-mono font-bold text-emerald-400">
@@ -687,7 +690,7 @@ export const SearchPage: React.FC = () => {
                                 e.stopPropagation();
                                 setSelectedProduct(product);
                               }}
-                              className="px-2.5 py-1 rounded-lg bg-surface-muted hover:bg-indigo-600 hover:text-white border border-white/[0.06] text-slate-300 text-[11px] font-mono transition-colors"
+                              className="px-2.5 py-1 rounded-lg bg-surface-muted hover:bg-indigo-600 hover:text-white border border-border text-slate-300 text-[11px] font-mono transition-colors shadow-sm"
                             >
                               Inspect
                             </button>
@@ -703,18 +706,18 @@ export const SearchPage: React.FC = () => {
 
           {/* Empty Results */}
           {!loading && searchResponse && searchResponse.results.length === 0 && (
-            <div className="glass-panel rounded-3xl p-16 text-center space-y-4 border border-white/[0.08]">
-              <div className="h-16 w-16 rounded-2xl bg-surface-muted border border-white/[0.08] flex items-center justify-center mx-auto text-slate-400">
+            <div className="glass-panel rounded-3xl p-16 text-center space-y-4 border border-border shadow-glass">
+              <div className="h-16 w-16 rounded-2xl bg-surface-muted border border-border flex items-center justify-center mx-auto text-slate-400">
                 <Search className="h-8 w-8 text-indigo-400" />
               </div>
-              <h3 className="text-xl font-bold text-white">No products found in corpus</h3>
-              <p className="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
+              <h3 className="text-xl font-display font-bold text-white">No products found in corpus</h3>
+              <p className="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed font-sans">
                 No matching active products found for "{query}" with the selected filters.
                 Try adjusting your search terms or clearing price filters.
               </p>
               <button
                 onClick={handleResetFilters}
-                className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-500 transition-colors"
+                className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-display font-semibold hover:bg-indigo-500 transition-colors shadow-md shadow-indigo-600/30"
               >
                 Clear All Filters
               </button>
@@ -723,7 +726,7 @@ export const SearchPage: React.FC = () => {
 
           {/* Pagination Bar */}
           {searchResponse && searchResponse.pagination.total_pages > 1 && (
-            <div className="flex items-center justify-between pt-6 border-t border-white/[0.08]">
+            <div className="flex items-center justify-between pt-6 border-t border-border">
               <div className="text-xs text-slate-400 font-mono">
                 Showing page <span className="text-white font-bold">{page}</span> of{" "}
                 <span className="text-white font-bold">
@@ -736,7 +739,7 @@ export const SearchPage: React.FC = () => {
                 <button
                   onClick={() => handleSearch(page - 1)}
                   disabled={!searchResponse.pagination.has_prev}
-                  className="px-3 py-1.5 rounded-xl bg-surface-muted border border-white/[0.08] text-xs font-semibold text-slate-300 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed flex items-center space-x-1 transition-colors"
+                  className="px-3 py-1.5 rounded-xl bg-surface-muted border border-border text-xs font-semibold text-slate-300 hover:bg-surface-subtle disabled:opacity-30 disabled:cursor-not-allowed flex items-center space-x-1 transition-colors"
                 >
                   <ChevronLeft className="h-4 w-4" />
                   <span>Prev</span>
@@ -757,7 +760,7 @@ export const SearchPage: React.FC = () => {
                           className={`h-8 w-8 rounded-xl flex items-center justify-center font-semibold transition-all ${
                             page === p
                               ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
-                              : "bg-surface-muted text-slate-400 hover:bg-slate-800 border border-white/[0.06]"
+                              : "bg-surface-muted text-slate-300 hover:bg-surface-subtle border border-border"
                           }`}
                         >
                           {p}
@@ -777,7 +780,7 @@ export const SearchPage: React.FC = () => {
                 <button
                   onClick={() => handleSearch(page + 1)}
                   disabled={!searchResponse.pagination.has_next}
-                  className="px-3 py-1.5 rounded-xl bg-surface-muted border border-white/[0.08] text-xs font-semibold text-slate-300 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed flex items-center space-x-1 transition-colors"
+                  className="px-3 py-1.5 rounded-xl bg-surface-muted border border-border text-xs font-semibold text-slate-300 hover:bg-surface-subtle disabled:opacity-30 disabled:cursor-not-allowed flex items-center space-x-1 transition-colors"
                 >
                   <span>Next</span>
                   <ChevronRight className="h-4 w-4" />

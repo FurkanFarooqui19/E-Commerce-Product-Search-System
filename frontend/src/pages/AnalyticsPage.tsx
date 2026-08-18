@@ -51,22 +51,22 @@ export const AnalyticsPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/[0.08]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border">
         <div>
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-mono font-semibold text-indigo-400 mb-2">
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-xs font-mono font-semibold text-indigo-300 mb-2">
             <Activity className="h-3.5 w-3.5" />
             <span>Search Observability & Audit Telemetry</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold text-white tracking-tight leading-tight">
             System Observability & Query Logs
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-slate-300 mt-1 font-sans">
             Real-time query execution telemetry, latency profiling, and corpus state metrics.
           </p>
         </div>
 
         <div className="flex items-center space-x-3 self-start sm:self-auto">
-          <div className="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-surface-muted border border-white/[0.06] text-xs font-mono text-slate-400">
+          <div className="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-surface-muted border border-border text-xs font-mono text-slate-300">
             <Radio className="h-3.5 w-3.5 text-emerald-400 animate-pulse" />
             <span>Live (10s Polling)</span>
           </div>
@@ -74,7 +74,7 @@ export const AnalyticsPage: React.FC = () => {
           <button
             onClick={() => fetchData(page, selectedMode)}
             disabled={loading}
-            className="px-4 py-2 rounded-xl bg-surface-muted hover:bg-slate-800 border border-white/[0.08] text-slate-200 text-xs font-semibold flex items-center space-x-2 transition-all shadow-sm"
+            className="px-4 py-2 rounded-xl bg-surface-muted hover:bg-surface-subtle border border-border text-slate-200 text-xs font-display font-semibold flex items-center space-x-2 transition-all shadow-sm"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             <span>Refresh</span>
@@ -85,7 +85,7 @@ export const AnalyticsPage: React.FC = () => {
       {/* Health Overview Cards */}
       {health && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          <div className="glass-panel p-5 rounded-3xl border border-white/[0.08] shadow-glass space-y-3">
+          <div className="glass-panel p-5 rounded-3xl border border-border shadow-glass space-y-3">
             <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
               <span>Database Corpus</span>
               <Database className="h-4 w-4 text-indigo-400" />
@@ -93,13 +93,13 @@ export const AnalyticsPage: React.FC = () => {
             <div className="text-3xl sm:text-4xl font-extrabold text-white font-mono tracking-tight">
               {health.database.product_count}
             </div>
-            <div className="flex items-center space-x-1.5 text-xs text-emerald-400 font-medium">
+            <div className="flex items-center space-x-1.5 text-xs text-emerald-400 font-medium font-sans">
               <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0" />
               <span>SQLite Connected & Synced</span>
             </div>
           </div>
 
-          <div className="glass-panel p-5 rounded-3xl border border-white/[0.08] shadow-glass space-y-3">
+          <div className="glass-panel p-5 rounded-3xl border border-border shadow-glass space-y-3">
             <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
               <span>Inverted Index Size</span>
               <Layers className="h-4 w-4 text-cyan-400" />
@@ -112,7 +112,7 @@ export const AnalyticsPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="glass-panel p-5 rounded-3xl border border-white/[0.08] shadow-glass space-y-3">
+          <div className="glass-panel p-5 rounded-3xl border border-border shadow-glass space-y-3">
             <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
               <span>Vocabulary Terms</span>
               <Cpu className="h-4 w-4 text-purple-400" />
@@ -125,7 +125,7 @@ export const AnalyticsPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="glass-panel p-5 rounded-3xl border border-white/[0.08] shadow-glass space-y-3">
+          <div className="glass-panel p-5 rounded-3xl border border-border shadow-glass space-y-3">
             <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
               <span>Engine Status</span>
               <ShieldCheck className="h-4 w-4 text-emerald-400" />
@@ -142,9 +142,9 @@ export const AnalyticsPage: React.FC = () => {
       )}
 
       {/* 6-Stage Search Architecture Flow Pipeline */}
-      <div className="glass-panel p-6 rounded-3xl border border-white/[0.08] shadow-glass space-y-4">
+      <div className="glass-panel p-6 rounded-3xl border border-border shadow-glass space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="font-bold text-base text-white flex items-center space-x-2">
+          <h3 className="font-display font-bold text-base text-white flex items-center space-x-2">
             <Terminal className="h-4 w-4 text-indigo-400" />
             <span>SearchForge 6-Stage Query Execution Pipeline</span>
           </h3>
@@ -162,23 +162,23 @@ export const AnalyticsPage: React.FC = () => {
           ].map(({ step, desc }, i) => (
             <div
               key={i}
-              className="p-4 rounded-2xl bg-surface-muted/80 border border-white/[0.06] hover:border-indigo-500/30 transition-all space-y-1.5"
+              className="p-4 rounded-2xl bg-surface-well border border-border hover:border-indigo-500/40 transition-all space-y-1.5 shadow-inner"
             >
-              <div className="font-bold text-indigo-300 font-mono text-[11px]">{step}</div>
-              <p className="text-[11px] text-slate-400 leading-snug">{desc}</p>
+              <div className="font-display font-bold text-indigo-300 text-[11px]">{step}</div>
+              <p className="text-[11px] text-slate-400 leading-snug font-sans">{desc}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Real-time Search Logs Table */}
-      <div className="glass-panel p-6 rounded-3xl border border-white/[0.08] shadow-glass space-y-4">
+      <div className="glass-panel p-6 rounded-3xl border border-border shadow-glass space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="font-bold text-base text-white">
+            <h3 className="font-display font-bold text-base text-white">
               Live Search Query Audit Trail ({logsData ? logsData.pagination.total_results : 0} Total Requests)
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-300 font-sans">
               Every search request is asynchronously logged with execution latency and candidate counts.
             </p>
           </div>
@@ -192,7 +192,7 @@ export const AnalyticsPage: React.FC = () => {
                 setSelectedMode(e.target.value);
                 fetchData(1, e.target.value);
               }}
-              className="bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
+              className="bg-surface-well border border-border rounded-xl px-3 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
             >
               <option value="">All Modes</option>
               <option value="bm25">BM25</option>
@@ -203,12 +203,12 @@ export const AnalyticsPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="overflow-x-auto rounded-2xl border border-white/[0.08]">
+        <div className="overflow-x-auto rounded-2xl border border-border">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950/80 text-slate-400 font-mono font-bold uppercase tracking-wider border-b border-white/[0.08]">
+            <thead className="bg-surface-well/90 text-slate-400 font-mono font-bold uppercase tracking-wider border-b border-border">
               <tr>
                 <th className="py-3 px-4 font-mono w-16">Log ID</th>
-                <th className="py-3 px-4">Query String</th>
+                <th className="py-3 px-4 font-display">Query String</th>
                 <th className="py-3 px-4 font-mono">Ranking Mode</th>
                 <th className="py-3 px-4 font-mono">Results</th>
                 <th className="py-3 px-4 font-mono">Latency</th>
@@ -216,16 +216,16 @@ export const AnalyticsPage: React.FC = () => {
                 <th className="py-3 px-4 text-right">Timestamp</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.06] bg-slate-950/40 font-mono">
+            <tbody className="divide-y divide-border bg-surface-well/40 font-mono">
               {logsData && logsData.logs.length > 0 ? (
                 logsData.logs.map((log: SearchLogItem) => (
-                  <tr key={log.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="py-2.5 px-4 text-slate-500 font-bold">#{log.id}</td>
+                  <tr key={log.id} className="hover:bg-white/[0.04] transition-colors">
+                    <td className="py-2.5 px-4 text-slate-400 font-bold">#{log.id}</td>
                     <td className="py-2.5 px-4 font-sans font-medium text-slate-200">
                       "{log.query_text}"
                     </td>
                     <td className="py-2.5 px-4">
-                      <span className="px-2 py-0.5 rounded-md bg-surface-muted border border-white/[0.06] text-indigo-300 text-[11px] font-bold">
+                      <span className="px-2 py-0.5 rounded-md bg-surface-muted border border-border text-indigo-300 text-[11px] font-bold">
                         {log.mode}
                       </span>
                     </td>
@@ -249,7 +249,7 @@ export const AnalyticsPage: React.FC = () => {
                           Fallback
                         </span>
                       ) : (
-                        <span className="text-slate-600 text-[11px]">—</span>
+                        <span className="text-slate-500 text-[11px]">—</span>
                       )}
                     </td>
                     <td className="py-2.5 px-4 text-slate-400 text-right text-[11px]">
@@ -259,7 +259,7 @@ export const AnalyticsPage: React.FC = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-slate-500 font-mono">
+                  <td colSpan={7} className="py-10 text-center text-slate-400 font-mono">
                     No search logs recorded yet. Run a search to see live telemetry!
                   </td>
                 </tr>
@@ -270,7 +270,7 @@ export const AnalyticsPage: React.FC = () => {
 
         {/* Logs Pagination */}
         {logsData && logsData.pagination.total_pages > 1 && (
-          <div className="flex items-center justify-between pt-4 border-t border-white/[0.08] text-xs text-slate-400 font-mono">
+          <div className="flex items-center justify-between pt-4 border-t border-border text-xs text-slate-400 font-mono">
             <div>
               Showing page <span className="text-white font-bold">{page}</span> of{" "}
               <span className="text-white font-bold">{logsData.pagination.total_pages}</span> (
@@ -281,7 +281,7 @@ export const AnalyticsPage: React.FC = () => {
               <button
                 onClick={() => fetchData(page - 1)}
                 disabled={!logsData.pagination.has_prev}
-                className="px-3 py-1.5 rounded-xl bg-surface-muted border border-white/[0.08] text-slate-300 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed flex items-center space-x-1 transition-colors"
+                className="px-3 py-1.5 rounded-xl bg-surface-muted border border-border text-slate-300 hover:bg-surface-subtle disabled:opacity-30 disabled:cursor-not-allowed flex items-center space-x-1 transition-colors"
               >
                 <ChevronLeft className="h-4 w-4" />
                 <span>Prev</span>
@@ -289,7 +289,7 @@ export const AnalyticsPage: React.FC = () => {
               <button
                 onClick={() => fetchData(page + 1)}
                 disabled={!logsData.pagination.has_next}
-                className="px-3 py-1.5 rounded-xl bg-surface-muted border border-white/[0.08] text-slate-300 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed flex items-center space-x-1 transition-colors"
+                className="px-3 py-1.5 rounded-xl bg-surface-muted border border-border text-slate-300 hover:bg-surface-subtle disabled:opacity-30 disabled:cursor-not-allowed flex items-center space-x-1 transition-colors"
               >
                 <span>Next</span>
                 <ChevronRight className="h-4 w-4" />
