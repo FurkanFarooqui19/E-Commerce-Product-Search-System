@@ -11,7 +11,13 @@ import type {
   RankingMode,
 } from "../types";
 
-const API_BASE = "/api/v1";
+const RAW_HOST = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
+const API_BASE = `${RAW_HOST}/api/v1`;
+
+function getApiUrl(endpoint: string): URL {
+  const origin = RAW_HOST || window.location.origin;
+  return new URL(`${origin}/api/v1${endpoint}`);
+}
 
 export async function getHealth(): Promise<HealthResponse> {
   const res = await fetch(`${API_BASE}/health`);
@@ -43,7 +49,7 @@ export interface SearchParams {
 }
 
 export async function searchProducts(params: SearchParams): Promise<SearchResponse> {
-  const url = new URL(`${window.location.origin}${API_BASE}/search`);
+  const url = getApiUrl("/search");
   url.searchParams.set("q", params.q);
   if (params.mode) url.searchParams.set("mode", params.mode);
   if (params.category) url.searchParams.set("category", params.category);
@@ -82,7 +88,7 @@ export interface CompareParams {
 }
 
 export async function compareAlgorithms(params: CompareParams): Promise<CompareResponse> {
-  const url = new URL(`${window.location.origin}${API_BASE}/search/compare`);
+  const url = getApiUrl("/search/compare");
   url.searchParams.set("q", params.q);
   if (params.modes) url.searchParams.set("modes", params.modes);
   if (params.top_k) url.searchParams.set("top_k", String(params.top_k));
@@ -130,7 +136,7 @@ export async function getSearchLogs(
   pageSize: number = 20,
   mode?: string
 ): Promise<LogsResponse> {
-  const url = new URL(`${window.location.origin}${API_BASE}/admin/logs`);
+  const url = getApiUrl("/admin/logs");
   url.searchParams.set("page", String(page));
   url.searchParams.set("page_size", String(pageSize));
   if (mode) url.searchParams.set("mode", mode);

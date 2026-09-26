@@ -4,83 +4,135 @@
 
 @layer base {
   :root {
+    color-scheme: light;
+    --bg-app: #f8fafc;
+    --bg-surface: #ffffff;
+    --bg-surface-elevated: #ffffff;
+    --bg-surface-muted: #f1f5f9;
+    --bg-surface-well: #e2e8f0;
+    --bg-surface-subtle: #f8fafc;
+    --border-color: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --border-subtle: #f1f5f9;
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    --shadow-subtle: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+    --shadow-elevated: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+    --shadow-modal: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    --tech-grid-color: rgba(15, 23, 42, 0.035);
+    --tech-dot-color: rgba(15, 23, 42, 0.05);
+  }
+
+  .dark {
     color-scheme: dark;
+    --bg-app: #030712;
+    --bg-surface: #0a0f1d;
+    --bg-surface-elevated: #0f172a;
+    --bg-surface-muted: #060a14;
+    --bg-surface-well: #020408;
+    --bg-surface-subtle: #141e34;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.15);
+    --border-subtle: rgba(255, 255, 255, 0.04);
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+    --shadow-subtle: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+    --shadow-card: 0 2px 8px -1px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+    --shadow-elevated: 0 12px 28px -4px rgba(0, 0, 0, 0.7), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+    --shadow-modal: 0 24px 48px -12px rgba(0, 0, 0, 0.9), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+    --tech-grid-color: rgba(255, 255, 255, 0.02);
+    --tech-dot-color: rgba(255, 255, 255, 0.035);
   }
 
   body {
-    background-color: #0c111d;
+    background-color: var(--bg-app);
     background-image: 
-      radial-gradient(at 15% 15%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
-      radial-gradient(at 85% 25%, rgba(139, 92, 246, 0.07) 0px, transparent 50%),
-      radial-gradient(at 50% 85%, rgba(6, 182, 212, 0.06) 0px, transparent 50%);
+      linear-gradient(to right, var(--tech-grid-color) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--tech-grid-color) 1px, transparent 1px),
+      radial-gradient(circle at 1px 1px, var(--tech-dot-color) 1px, transparent 0);
+    background-size: 32px 32px, 32px 32px, 32px 32px;
     background-attachment: fixed;
-    color: #e2e8f0;
+    color: var(--text-primary);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
     overflow-x: hidden;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 }
 
-/* Custom developer-tool scrollbar */
+/* Precision technical scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f1523;
+  background: var(--bg-app);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #25334d;
-  border-radius: 4px;
+  background: var(--border-strong);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3b4d70;
+  background: #3b82f6;
 }
 
-/* Rich Surface & Glassmorphism */
-.glass-panel {
-  background: rgba(21, 29, 47, 0.78);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+/* Precision Surfaces */
+.surface-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-card);
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.glass-panel-subtle {
-  background: rgba(26, 35, 56, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+.surface-card-hover {
+  transition: border-color 0.18s ease, background-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-.glass-panel-hover {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.glass-panel-hover:hover {
+.surface-card-hover:hover {
   border-color: rgba(99, 102, 241, 0.4);
-  transform: translateY(-2px);
-  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.45), 0 0 25px -5px rgba(99, 102, 241, 0.2);
+  box-shadow: var(--shadow-elevated);
 }
 
-/* Subtle architectural grid */
-.subtle-grid {
-  background-size: 36px 36px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+.surface-elevated {
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-elevated);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.subtle-dots {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 0);
-  background-size: 24px 24px;
+.surface-well {
+  background-color: var(--bg-surface-well);
+  border: 1px solid var(--border-subtle);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-/* Shimmer animation utility */
+/* Keyboard hint styling */
+.kbd-shortcut {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.12rem 0.38rem;
+  font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--text-muted);
+  background-color: var(--bg-surface-muted);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
+
+/* Skeleton loader */
 .animate-skeleton {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 25%, rgba(255, 255, 255, 0.08) 37%, rgba(255, 255, 255, 0.03) 63%);
+  background: linear-gradient(90deg, rgba(100, 116, 139, 0.05) 25%, rgba(100, 116, 139, 0.12) 37%, rgba(100, 116, 139, 0.05) 63%);
   background-size: 400% 100%;
   animation: skeleton-loading 1.4s ease infinite;
 }
