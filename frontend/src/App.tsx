@@ -29,7 +29,7 @@ export function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-slate-100 flex flex-col justify-between selection:bg-primary/30 selection:text-white relative font-sans">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 flex flex-col justify-between selection:bg-primary/30 selection:text-white relative font-sans">
       {/* Top Specular Horizon Line & Subtle Ambient Depth */}
       <div className="fixed inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent z-50 pointer-events-none" />
       <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_25%_at_50%_0%,rgba(59,130,246,0.05),transparent)] z-0" />

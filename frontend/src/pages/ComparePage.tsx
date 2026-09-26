@@ -162,7 +162,7 @@ export const ComparePage: React.FC = () => {
 
         {/* Sample queries */}
         <div className="flex flex-wrap items-center gap-1.5 pt-1 text-xs">
-          <span className="text-slate-500 font-mono text-[11px] mr-1">Benchmarks:</span>
+          <span className="text-slate-500 dark:text-slate-400 font-mono text-[11px] mr-1">Benchmarks:</span>
           {COMPARE_PRESETS.map((preset, i) => (
             <button
               key={i}
@@ -170,7 +170,7 @@ export const ComparePage: React.FC = () => {
                 setQuery(preset);
                 runCompare(preset);
               }}
-              className="px-2 py-0.5 rounded bg-surface border border-border text-slate-300 hover:text-white hover:border-slate-500 transition-colors font-mono text-[11px]"
+              className="px-2 py-0.5 rounded bg-surface border border-border text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:border-slate-400 dark:hover:border-slate-500 transition-colors font-mono text-[11px]"
             >
               {preset}
             </button>
@@ -240,7 +240,7 @@ export const ComparePage: React.FC = () => {
 
       {/* Error Message */}
       {error && (
-        <div className="p-4 rounded-lg bg-rose-950/30 border border-rose-800/50 text-rose-300 text-xs text-center">
+        <div className="p-4 rounded-lg bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-300 text-xs text-center">
           {error}
         </div>
       )}

@@ -87,10 +87,10 @@ export const Logo: React.FC<LogoProps> = ({ className = "", size = 32, showText 
       {showText && (
         <div className="flex flex-col">
           <div className="flex items-center space-x-1.5 leading-none">
-            <span className="font-display font-bold text-base tracking-tight text-white">
+            <span className="font-display font-bold text-base tracking-tight text-slate-900 dark:text-white">
               SearchForge
             </span>
-            <span className="text-[9px] font-mono font-bold px-1 py-0.5 rounded bg-surface-elevated text-primary-light border border-primary/30">
+            <span className="text-[9px] font-mono font-bold px-1 py-0.5 rounded bg-surface-elevated text-primary dark:text-primary-light border border-primary/30">
               IR
             </span>
           </div>
