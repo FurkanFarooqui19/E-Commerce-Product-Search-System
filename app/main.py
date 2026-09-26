@@ -55,11 +55,17 @@ async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
     logger.info("Database tables verified / created.")
 
-    # Load index on startup
+    # Auto-seed database if empty (ensures zero-config cloud deployment)
     from app.services.index_service import IndexService
     from app.database import SessionLocal
+    from app.models.product import Product
 
     with SessionLocal() as db:
+        if db.query(Product).count() == 0:
+            logger.info("Database has 0 products. Auto-seeding catalog and evaluation queries...")
+            from scripts.seed_db import seed_db
+            seed_db()
+
         IndexService.load_index(db)
 
     logger.info("Application startup complete. Ready to serve requests.")
@@ -85,11 +91,11 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Allow all origins in development (tighten in production)
+# Allow all origins for production cloud deployments (e.g., Vercel frontend -> Render backend)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

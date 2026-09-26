@@ -6,6 +6,7 @@ import { EvaluationPage } from "./pages/EvaluationPage";
 import { AnalyticsPage } from "./pages/AnalyticsPage";
 import { Logo } from "./components/Logo";
 import { BookOpen } from "lucide-react";
+import { RAW_HOST } from "./api/client";
 
 export function App() {
   const [activeTab, setActiveTab] = useState<"search" | "compare" | "evaluation" | "analytics">("search");
@@ -66,7 +67,7 @@ export function App() {
                 Cranfield n=30
               </span>
               <a
-                href="/docs"
+                href={RAW_HOST ? `${RAW_HOST}/docs` : "/docs"}
                 target="_blank"
                 rel="noreferrer"
                 className="text-primary hover:text-primary-hover flex items-center space-x-1 transition-colors ml-1"

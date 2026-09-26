@@ -1,17 +1,23 @@
 import json
+import os
 from sqlalchemy.orm import Session
 from app.database import engine
 from app.models.product import Category, Product, ProductSpecification
 from app.models.evaluation import EvaluationQuery, RelevanceJudgment
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 
 def seed_db():
     print("Seeding database...")
 
-    with open("app/data/seed_products.json", "r") as f:
+    products_path = os.path.join(BASE_DIR, "app", "data", "seed_products.json")
+    queries_path = os.path.join(BASE_DIR, "app", "data", "eval_queries.json")
+
+    with open(products_path, "r", encoding="utf-8") as f:
         products_data = json.load(f)
 
-    with open("app/data/eval_queries.json", "r") as f:
+    with open(queries_path, "r", encoding="utf-8") as f:
         queries_data = json.load(f)
 
     with Session(engine) as session:

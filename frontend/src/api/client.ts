@@ -11,8 +11,11 @@ import type {
   RankingMode,
 } from "../types";
 
-const RAW_HOST = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
-const API_BASE = `${RAW_HOST}/api/v1`;
+export const RAW_HOST = (import.meta.env.VITE_API_URL || "")
+  .trim()
+  .replace(/\/+$/, "")
+  .replace(/\/api\/v1\/?$/, "");
+export const API_BASE = `${RAW_HOST}/api/v1`;
 
 function getApiUrl(endpoint: string): URL {
   const origin = RAW_HOST || window.location.origin;
