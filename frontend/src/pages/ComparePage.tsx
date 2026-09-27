@@ -23,6 +23,7 @@ export const ComparePage: React.FC = () => {
   const [data, setData] = useState<CompareResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [mobileCompareMode, setMobileCompareMode] = useState<string>("all");
 
   const runCompare = async (searchQuery: string = query, k: number = topK) => {
     if (!searchQuery.trim()) return;
@@ -180,23 +181,23 @@ export const ComparePage: React.FC = () => {
 
       {/* Latency & Concordance Strip */}
       {data && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
           {modesConfig.map(({ id, title, accent }) => {
             const lat = data.latency_ms[id as keyof typeof data.latency_ms] || 0;
             return (
               <div
                 key={id}
-                className="surface-card p-3 rounded-xl flex items-center justify-between"
+                className="surface-card p-2.5 sm:p-3 rounded-xl flex items-center justify-between"
               >
                 <div>
-                  <div className="text-[10px] text-slate-400 font-mono">{title}</div>
-                  <div className={`text-base font-bold font-mono ${accent}`}>
+                  <div className="text-[10px] text-slate-400 font-mono truncate">{title}</div>
+                  <div className={`text-sm sm:text-base font-bold font-mono ${accent}`}>
                     {lat.toFixed(2)} ms
                   </div>
                 </div>
                 <div className="text-[10px] text-slate-500 font-mono flex items-center space-x-1">
                   <Clock className="h-3 w-3" />
-                  <span>latency</span>
+                  <span className="hidden xs:inline">latency</span>
                 </div>
               </div>
             );
@@ -207,17 +208,17 @@ export const ComparePage: React.FC = () => {
       {/* Concordance Status Banner */}
       {concordance && (
         <div
-          className={`p-3 rounded-lg border text-xs flex items-center justify-between gap-3 ${
+          className={`p-3 rounded-lg border text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 ${
             concordance.allAgree
               ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/40 text-emerald-800 dark:text-emerald-300"
               : "bg-surface-card border-border text-slate-700 dark:text-slate-300"
           }`}
         >
-          <div className="flex items-center space-x-2">
+          <div className="flex items-start sm:items-center space-x-2">
             {concordance.allAgree ? (
-              <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5 sm:mt-0" />
             ) : (
-              <Info className="h-4 w-4 text-primary-light flex-shrink-0" />
+              <Info className="h-4 w-4 text-primary-light flex-shrink-0 mt-0.5 sm:mt-0" />
             )}
             <div>
               <span className="font-semibold">
@@ -232,7 +233,7 @@ export const ComparePage: React.FC = () => {
               </span>
             </div>
           </div>
-          <span className="font-mono text-[10px] text-slate-500 uppercase">
+          <span className="font-mono text-[10px] text-slate-500 uppercase self-end sm:self-auto flex-shrink-0">
             Top-1 Verification
           </span>
         </div>
@@ -245,6 +246,25 @@ export const ComparePage: React.FC = () => {
         </div>
       )}
 
+      {/* Mobile Algorithm Filter Segmented Strip */}
+      {data && (
+        <div className="md:hidden flex items-center p-1 rounded-xl bg-surface-muted border border-border overflow-x-auto scrollbar-none gap-1">
+          {["all", "bm25", "hybrid", "tfidf", "keyword"].map((m) => (
+            <button
+              key={m}
+              onClick={() => setMobileCompareMode(m)}
+              className={`flex-1 min-w-[55px] py-1.5 px-2 rounded-lg text-xs font-mono font-medium transition-colors uppercase text-center ${
+                mobileCompareMode === m
+                  ? "bg-surface-elevated text-slate-900 dark:text-white border border-border shadow-subtle font-semibold"
+                  : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              {m}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* 4 Synchronized Ranking Columns */}
       {data && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
@@ -254,7 +274,11 @@ export const ComparePage: React.FC = () => {
             return (
               <div
                 key={id}
-                className="surface-card rounded-xl p-4 flex flex-col justify-between space-y-3"
+                className={`surface-card rounded-xl p-3.5 sm:p-4 flex flex-col justify-between space-y-3 ${
+                  mobileCompareMode === "all" || mobileCompareMode === id
+                    ? "flex"
+                    : "hidden md:flex"
+                }`}
               >
                 {/* Column Header */}
                 <div>

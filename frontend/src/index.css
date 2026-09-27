@@ -145,3 +145,7 @@
     background-position: 0 50%;
   }
 }
+
+.safe-area-bottom {
+  padding-bottom: max(0.375rem, env(safe-area-inset-bottom));
+}

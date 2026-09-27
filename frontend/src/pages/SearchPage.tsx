@@ -14,6 +14,9 @@ import {
   Star,
   Zap,
   Cpu,
+  SlidersHorizontal,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { searchProducts, getSuggestions, getCategories } from "../api/client";
 import type { SearchResponse, Category, Product, RankingMode } from "../types";
@@ -38,6 +41,41 @@ const PRESET_PRICE_RANGES = [
   { label: "Above ₹20k", min: 20000, max: undefined },
 ];
 
+const RANKING_MODES = [
+  {
+    id: "bm25",
+    name: "BM25 (Default)",
+    shortName: "BM25",
+    tag: "k₁=1.5, b=0.75",
+    desc: "Saturation + length normalization",
+    dot: "bg-emerald-500 dark:bg-emerald-400",
+  },
+  {
+    id: "hybrid",
+    name: "Hybrid Ranker",
+    shortName: "Hybrid",
+    tag: "0.8 BM25 + Field",
+    desc: "Convex sum with title field weighting",
+    dot: "bg-indigo-500 dark:bg-indigo-400",
+  },
+  {
+    id: "tfidf",
+    name: "TF-IDF",
+    shortName: "TF-IDF",
+    tag: "Cosine Vector",
+    desc: "Sub-linear TF with log IDF weights",
+    dot: "bg-amber-500 dark:bg-amber-400",
+  },
+  {
+    id: "keyword",
+    name: "Keyword Match",
+    shortName: "Keyword",
+    tag: "Weighted Sum",
+    desc: "Raw frequency counts on weighted fields",
+    dot: "bg-cyan-500 dark:bg-cyan-400",
+  },
+] as const;
+
 export const SearchPage: React.FC = () => {
   // Query & state
   const [query, setQuery] = useState("wireless headphones");
@@ -48,6 +86,7 @@ export const SearchPage: React.FC = () => {
   const [sortBy, setSortBy] = useState<"score" | "price_asc" | "price_desc" | "rating">("score");
   const [page, setPage] = useState<number>(1);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Suggestions
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -193,18 +232,22 @@ export const SearchPage: React.FC = () => {
     return items; // Default score
   }, [searchResponse?.results, sortBy]);
 
+  const activeFilterCount =
+    (selectedCategory ? 1 : 0) +
+    (minPrice !== undefined || maxPrice !== undefined ? 1 : 0);
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-5 sm:space-y-6">
       {/* ── Search Header & Command Input ── */}
       <div className="max-w-3xl mx-auto space-y-3">
         <div className="text-center space-y-1.5 flex flex-col items-center">
-          <div className="inline-flex items-center space-x-2.5">
+          <div className="inline-flex items-center space-x-2 sm:space-x-2.5">
             <Logo size={28} />
-            <h1 className="text-2xl sm:text-3xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
+            <h1 className="text-xl sm:text-3xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
               Product Search & IR Ranking
             </h1>
           </div>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 px-2">
             Query 510 catalog documents via Inverted Index BM25, TF-IDF, and Hybrid field weighting.
           </p>
         </div>
@@ -212,7 +255,7 @@ export const SearchPage: React.FC = () => {
         {/* Command Search Input Bar */}
         <div className="relative">
           <div className="relative flex items-center rounded-xl bg-surface-muted border border-border focus-within:border-primary focus-within:bg-surface-elevated transition-colors shadow-card">
-            <div className="pl-3.5 text-slate-400 flex items-center">
+            <div className="pl-3 sm:pl-3.5 text-slate-400 flex items-center flex-shrink-0">
               <Search className="h-4 w-4 text-slate-400" />
             </div>
 
@@ -226,11 +269,11 @@ export const SearchPage: React.FC = () => {
               }}
               onFocus={() => setShowSuggestions(true)}
               onKeyDown={handleKeyDown}
-              placeholder="Search catalog or NL expression (e.g., 'wireless headphones under 3000')..."
-              className="w-full py-3 px-3 bg-transparent text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none font-sans"
+              placeholder="Search catalog or NL expression (e.g. 'wireless headphones')..."
+              className="w-full py-2.5 sm:py-3 px-2 sm:px-3 bg-transparent text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none font-sans min-w-0"
             />
 
-            <div className="flex items-center space-x-1.5 pr-2">
+            <div className="flex items-center space-x-1 sm:space-x-1.5 pr-1.5 sm:pr-2 flex-shrink-0">
               {query ? (
                 <button
                   onClick={() => {
@@ -249,13 +292,13 @@ export const SearchPage: React.FC = () => {
               <button
                 onClick={() => handleSearch(1)}
                 disabled={loading}
-                className="px-3.5 py-1.5 bg-primary hover:bg-primary-hover text-white text-xs font-medium rounded-lg transition-colors flex items-center space-x-1.5 disabled:opacity-50"
+                className="px-2.5 sm:px-3.5 py-1.5 bg-primary hover:bg-primary-hover text-white text-xs font-medium rounded-lg transition-colors flex items-center space-x-1 sm:space-x-1.5 disabled:opacity-50 flex-shrink-0"
               >
                 {loading ? (
                   <RefreshCw className="h-3.5 w-3.5 animate-spin" />
                 ) : (
                   <>
-                    <span>Search</span>
+                    <span className="hidden xs:inline">Search</span>
                     <ArrowRight className="h-3 w-3" />
                   </>
                 )}
@@ -271,7 +314,7 @@ export const SearchPage: React.FC = () => {
             >
               <div className="px-3 py-1.5 text-[10px] font-mono font-medium uppercase tracking-wider text-slate-400 border-b border-border flex items-center justify-between bg-surface-muted">
                 <span>Inverted Index Suggestions</span>
-                <span className="text-slate-500">↑↓ to navigate · Enter to select</span>
+                <span className="text-slate-500 hidden sm:inline">↑↓ to navigate · Enter to select</span>
               </div>
               <ul className="divide-y divide-border">
                 {suggestions.map((item, idx) => (
@@ -280,11 +323,11 @@ export const SearchPage: React.FC = () => {
                     onClick={() => handleSelectSuggestion(item)}
                     className="px-3.5 py-2 text-xs text-slate-800 dark:text-slate-200 hover:bg-surface-elevated hover:text-slate-900 dark:hover:text-white cursor-pointer flex items-center justify-between transition-colors"
                   >
-                    <div className="flex items-center space-x-2">
-                      <Search className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
-                      <span className="font-mono text-xs">{item}</span>
+                    <div className="flex items-center space-x-2 truncate mr-2">
+                      <Search className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 flex-shrink-0" />
+                      <span className="font-mono text-xs truncate">{item}</span>
                     </div>
-                    <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">term</span>
+                    <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 flex-shrink-0">term</span>
                   </li>
                 ))}
               </ul>
@@ -292,9 +335,9 @@ export const SearchPage: React.FC = () => {
           )}
         </div>
 
-        {/* Quick Example Query Pills */}
+        {/* Quick Example Query Pills (Responsive horizontal wrap/scroll) */}
         <div className="flex flex-wrap items-center justify-center gap-1.5 pt-0.5 text-xs">
-          <span className="text-slate-500 font-mono text-[11px] mr-1">Sample Queries:</span>
+          <span className="text-slate-500 font-mono text-[11px] mr-0.5 hidden xs:inline">Sample Queries:</span>
           {EXAMPLE_QUERIES.map((example, i) => (
             <button
               key={i}
@@ -302,7 +345,7 @@ export const SearchPage: React.FC = () => {
                 setQuery(example);
                 handleSearch(1, example);
               }}
-              className="px-2 py-0.5 rounded bg-surface border border-border text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:border-slate-400 dark:hover:border-slate-500 transition-colors font-mono text-[11px]"
+              className="px-2 py-0.5 rounded bg-surface border border-border text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:border-slate-400 dark:hover:border-slate-500 transition-colors font-mono text-[10px] sm:text-[11px]"
             >
               {example}
             </button>
@@ -312,10 +355,10 @@ export const SearchPage: React.FC = () => {
 
       {/* ── IR Query Engine Inspector (Structured AST & Telemetry) ── */}
       {searchResponse && (
-        <div className="surface-card rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="surface-card rounded-xl p-3 sm:p-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
           <div className="flex flex-wrap items-center gap-2">
             <div className="flex items-center space-x-1.5 text-slate-700 dark:text-slate-300 font-mono text-[11px]">
-              <Cpu className="h-3.5 w-3.5 text-primary-light" />
+              <Cpu className="h-3.5 w-3.5 text-primary-light flex-shrink-0" />
               <span className="text-slate-500 dark:text-slate-400">Tokens:</span>
               {searchResponse.query.processed_tokens.length > 0 ? (
                 searchResponse.query.processed_tokens.map((token, idx) => (
@@ -333,28 +376,28 @@ export const SearchPage: React.FC = () => {
 
             {/* Natural Language Extracted Filters */}
             {nlData && (nlData.max_price !== null || nlData.min_price !== null || nlData.category_hint !== null) && (
-              <div className="flex flex-wrap items-center gap-1.5 pl-2 border-l border-border">
+              <div className="flex flex-wrap items-center gap-1.5 sm:pl-2 sm:border-l sm:border-border">
                 <span className="text-slate-500 dark:text-slate-400 font-mono text-[11px]">NL Filters:</span>
                 {nlData.category_hint && (
                   <span className="px-1.5 py-0.5 rounded bg-surface-muted border border-indigo-800/60 text-indigo-600 dark:text-indigo-300 font-mono text-[10px]">
-                    category: {nlData.category_hint}
+                    cat: {nlData.category_hint}
                   </span>
                 )}
                 {nlData.max_price !== null && (
                   <span className="px-1.5 py-0.5 rounded bg-surface-muted border border-emerald-800/60 text-emerald-600 dark:text-emerald-300 font-mono text-[10px]">
-                    price ≤ ₹{nlData.max_price.toLocaleString("en-IN")}
+                    ≤ ₹{nlData.max_price.toLocaleString("en-IN")}
                   </span>
                 )}
                 {nlData.min_price !== null && (
                   <span className="px-1.5 py-0.5 rounded bg-surface-muted border border-cyan-800/60 text-cyan-600 dark:text-cyan-300 font-mono text-[10px]">
-                    price ≥ ₹{nlData.min_price.toLocaleString("en-IN")}
+                    ≥ ₹{nlData.min_price.toLocaleString("en-IN")}
                   </span>
                 )}
               </div>
             )}
           </div>
 
-          <div className="flex items-center space-x-3 font-mono text-[11px] text-slate-500 dark:text-slate-400">
+          <div className="flex items-center space-x-2 sm:space-x-3 font-mono text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 flex-wrap">
             <div className="flex items-center space-x-1 text-emerald-600 dark:text-emerald-400">
               <Clock className="h-3 w-3" />
               <span>{searchResponse.metadata.latency_ms.toFixed(2)} ms</span>
@@ -365,15 +408,202 @@ export const SearchPage: React.FC = () => {
               <span>{searchResponse.metadata.total_candidates} scored</span>
             </div>
             <span>•</span>
-            <span className="uppercase text-slate-500 dark:text-slate-400">{mode}</span>
+            <span className="uppercase text-slate-500 dark:text-slate-400 font-semibold">{mode}</span>
           </div>
         </div>
       )}
 
+      {/* ── Mobile/Tablet Controls Bar (< lg) ── */}
+      <div className="lg:hidden space-y-2.5">
+        {/* Quick Algorithm Swipeable/Scrollable Selector */}
+        <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 scrollbar-none">
+          <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 flex-shrink-0 flex items-center space-x-1 mr-1">
+            <Zap className="h-3 w-3 text-primary-light" />
+            <span>Model:</span>
+          </span>
+          {RANKING_MODES.map((m) => {
+            const isSel = mode === m.id;
+            return (
+              <button
+                key={m.id}
+                onClick={() => setMode(m.id as RankingMode)}
+                className={`flex-shrink-0 px-2.5 py-1 rounded-lg text-xs font-mono flex items-center space-x-1.5 border transition-all ${
+                  isSel
+                    ? "bg-surface-elevated border-primary text-slate-900 dark:text-white font-semibold shadow-subtle"
+                    : "bg-surface-muted border-border text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                }`}
+              >
+                <span className={`h-1.5 w-1.5 rounded-full ${m.dot}`} />
+                <span>{m.shortName}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Mobile Filters Toggle Button */}
+        <div className="flex items-center justify-between gap-2">
+          <button
+            onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+            className={`flex-1 flex items-center justify-between px-3.5 py-2 rounded-xl border text-xs transition-colors ${
+              mobileFiltersOpen || activeFilterCount > 0
+                ? "bg-surface-elevated border-primary text-slate-900 dark:text-white shadow-subtle"
+                : "bg-surface-muted border-border text-slate-700 dark:text-slate-300 hover:bg-surface-elevated"
+            }`}
+          >
+            <div className="flex items-center space-x-2">
+              <SlidersHorizontal className="h-3.5 w-3.5 text-primary" />
+              <span className="font-medium">Filter by Category & Price</span>
+              {activeFilterCount > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full bg-primary text-white text-[10px] font-mono font-bold">
+                  {activeFilterCount}
+                </span>
+              )}
+            </div>
+            {mobileFiltersOpen ? (
+              <ChevronUp className="h-4 w-4 text-slate-400" />
+            ) : (
+              <ChevronDown className="h-4 w-4 text-slate-400" />
+            )}
+          </button>
+
+          {activeFilterCount > 0 && (
+            <button
+              onClick={handleResetFilters}
+              className="px-2.5 py-2 rounded-xl bg-surface border border-border text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-xs font-mono transition-colors flex items-center space-x-1"
+              title="Reset all filters"
+            >
+              <RefreshCw className="h-3 w-3" />
+              <span className="hidden xs:inline">Reset</span>
+            </button>
+          )}
+        </div>
+
+        {/* Collapsible Filter Panel on Mobile */}
+        {mobileFiltersOpen && (
+          <div className="surface-card rounded-xl p-4 space-y-4 animate-in fade-in slide-in-from-top-2 duration-150 border border-primary/30">
+            {/* Category Filter */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center space-x-1.5">
+                  <Tag className="h-3 w-3 text-slate-400" />
+                  <span>Categories</span>
+                </label>
+                {selectedCategory && (
+                  <button
+                    onClick={() => setSelectedCategory("")}
+                    className="text-[10px] font-mono text-primary hover:underline"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-1.5 max-h-44 overflow-y-auto pr-1">
+                <button
+                  onClick={() => setSelectedCategory("")}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors ${
+                    !selectedCategory
+                      ? "bg-primary text-white font-medium"
+                      : "bg-surface-muted text-slate-700 dark:text-slate-300 hover:bg-surface border border-border"
+                  }`}
+                >
+                  All (510)
+                </button>
+                {categories.map((cat) => {
+                  const isSel = selectedCategory === cat.slug;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => setSelectedCategory(isSel ? "" : cat.slug)}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors ${
+                        isSel
+                          ? "bg-surface-elevated text-primary border border-primary/50 font-medium"
+                          : "bg-surface-muted text-slate-700 dark:text-slate-300 hover:bg-surface border border-border"
+                      }`}
+                    >
+                      {cat.name} ({cat.product_count})
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Price Filter */}
+            <div className="pt-3 border-t border-border">
+              <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 block mb-2">
+                Price Range (₹)
+              </label>
+              <div className="grid grid-cols-2 xs:grid-cols-4 gap-1.5 mb-2.5">
+                {PRESET_PRICE_RANGES.map((preset, idx) => {
+                  const isPresetActive = minPrice === preset.min && maxPrice === preset.max;
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setMinPrice(preset.min);
+                        setMaxPrice(preset.max);
+                        setTimeout(() => handleSearch(1), 50);
+                      }}
+                      className={`px-2 py-1 rounded text-[10px] font-mono text-center border transition-colors ${
+                        isPresetActive
+                          ? "bg-surface-elevated border-primary text-slate-900 dark:text-white font-semibold"
+                          : "bg-surface-muted border-border text-slate-600 dark:text-slate-400"
+                      }`}
+                    >
+                      {preset.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 mb-2.5">
+                <div>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono mb-0.5 block">Min (₹)</span>
+                  <input
+                    type="number"
+                    value={minPrice !== undefined ? minPrice : ""}
+                    onChange={(e) => setMinPrice(e.target.value ? Number(e.target.value) : undefined)}
+                    placeholder="0"
+                    className="w-full bg-surface-muted border border-border rounded px-2.5 py-1 text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-primary"
+                  />
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono mb-0.5 block">Max (₹)</span>
+                  <input
+                    type="number"
+                    value={maxPrice !== undefined ? maxPrice : ""}
+                    onChange={(e) => setMaxPrice(e.target.value ? Number(e.target.value) : undefined)}
+                    placeholder="50000"
+                    className="w-full bg-surface-muted border border-border rounded px-2.5 py-1 text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-primary"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    handleSearch(1);
+                    setMobileFiltersOpen(false);
+                  }}
+                  className="flex-1 py-1.5 bg-primary hover:bg-primary-hover text-white text-xs font-medium rounded-lg transition-colors"
+                >
+                  Apply & Close
+                </button>
+                <button
+                  onClick={handleResetFilters}
+                  className="px-3 py-1.5 bg-surface border border-border text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-xs font-mono rounded-lg transition-colors"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* ── Main Layout: Sidebar Controls & Results ── */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-        {/* Left Sidebar: Controls & Filters */}
-        <div className="surface-card rounded-xl p-4 space-y-5">
+        {/* Left Sidebar: Controls & Filters (Desktop only) */}
+        <div className="hidden lg:block lg:col-span-1 surface-card rounded-xl p-4 space-y-5 sticky top-20">
           {/* Ranking Algorithm Switcher */}
           <div>
             <div className="flex items-center justify-between mb-2.5">
@@ -385,36 +615,7 @@ export const SearchPage: React.FC = () => {
             </div>
 
             <div className="space-y-1.5">
-              {[
-                {
-                  id: "bm25",
-                  name: "BM25 (Default)",
-                  tag: "k₁=1.5, b=0.75",
-                  desc: "Saturation + length normalization",
-                  dot: "bg-emerald-500 dark:bg-emerald-400",
-                },
-                {
-                  id: "hybrid",
-                  name: "Hybrid Ranker",
-                  tag: "0.8 BM25 + Field",
-                  desc: "Convex sum with title field weighting",
-                  dot: "bg-indigo-500 dark:bg-indigo-400",
-                },
-                {
-                  id: "tfidf",
-                  name: "TF-IDF",
-                  tag: "Cosine Vector",
-                  desc: "Sub-linear TF with log IDF weights",
-                  dot: "bg-amber-500 dark:bg-amber-400",
-                },
-                {
-                  id: "keyword",
-                  name: "Keyword Match",
-                  tag: "Weighted Sum",
-                  desc: "Raw frequency counts on weighted fields",
-                  dot: "bg-cyan-500 dark:bg-cyan-400",
-                },
-              ].map(({ id, name, tag, desc, dot }) => {
+              {RANKING_MODES.map(({ id, name, tag, desc, dot }) => {
                 const isSelected = mode === id;
                 return (
                   <button
@@ -422,7 +623,7 @@ export const SearchPage: React.FC = () => {
                     onClick={() => setMode(id as RankingMode)}
                     className={`w-full text-left p-2.5 rounded-lg border transition-colors ${
                       isSelected
-                        ? "bg-surface-elevated border-primary text-slate-900 dark:text-white"
+                        ? "bg-surface-elevated border-primary text-slate-900 dark:text-white shadow-subtle"
                         : "bg-surface-muted border-border text-slate-600 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-600 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
@@ -569,7 +770,7 @@ export const SearchPage: React.FC = () => {
         </div>
 
         {/* Right Section: Results Header & Results Display */}
-        <div className="lg:col-span-3 space-y-4">
+        <div className="w-full lg:col-span-3 space-y-4">
           {/* Results Action Bar */}
           <div className="surface-card rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 text-xs">
             <div className="flex items-center space-x-2">
@@ -673,8 +874,9 @@ export const SearchPage: React.FC = () => {
           {/* Results List View (Tabular IR View) */}
           {!loading && displayResults.length > 0 && viewMode === "list" && (
             <div className="surface-card rounded-xl overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+              {/* Desktop Table (> sm) */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full text-left text-xs min-w-[620px]">
                   <thead className="bg-surface-muted text-slate-500 dark:text-slate-400 font-mono font-medium uppercase tracking-wider border-b border-border">
                     <tr>
                       <th className="py-2.5 px-3 w-12">Rank</th>
@@ -751,12 +953,77 @@ export const SearchPage: React.FC = () => {
                   </tbody>
                 </table>
               </div>
+
+              {/* Mobile Compact Card List (< sm) */}
+              <div className="sm:hidden divide-y divide-border">
+                {displayResults.map((item) => {
+                  const { rank, score, product } = item;
+                  const imageUrl = getProductImage(product);
+                  return (
+                    <div
+                      key={product.id}
+                      onClick={() => setSelectedProduct(product)}
+                      className="p-3 hover:bg-surface-elevated/70 cursor-pointer transition-colors space-y-2"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center space-x-2.5 min-w-0">
+                          <span className="font-mono text-xs font-bold text-slate-700 dark:text-slate-300 px-1.5 py-0.5 rounded bg-surface-muted border border-border flex-shrink-0">
+                            #{rank}
+                          </span>
+                          <img
+                            src={imageUrl}
+                            alt={product.name}
+                            onError={(e) => {
+                              e.currentTarget.src = FALLBACK_IMAGE;
+                            }}
+                            className="h-9 w-9 object-contain rounded bg-surface-well border border-border p-0.5 flex-shrink-0"
+                          />
+                          <div className="min-w-0">
+                            <div className="font-sans font-semibold text-xs text-slate-900 dark:text-slate-100 line-clamp-1">
+                              {product.name}
+                            </div>
+                            <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono truncate">
+                              {product.brand} · {product.category?.name || "General"}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="text-right flex-shrink-0">
+                          <div className="font-mono font-bold text-xs text-slate-900 dark:text-white">
+                            ₹{product.price.toLocaleString("en-IN")}
+                          </div>
+                          <div className="font-mono text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                            {score.toFixed(3)}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1 border-t border-border/50 text-[11px]">
+                        <div className="flex items-center space-x-1 text-amber-600 dark:text-amber-300 font-mono">
+                          <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                          <span>{product.rating.toFixed(1)}</span>
+                        </div>
+
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedProduct(product);
+                          }}
+                          className="px-2 py-0.5 rounded bg-surface border border-border text-slate-600 dark:text-slate-300 text-[10px] font-mono"
+                        >
+                          Inspect Details →
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
 
           {/* Empty Results State */}
           {!loading && searchResponse && searchResponse.results.length === 0 && (
-            <div className="surface-card rounded-xl p-12 text-center space-y-3">
+            <div className="surface-card rounded-xl p-8 sm:p-12 text-center space-y-3">
               <div className="h-12 w-12 rounded-xl bg-surface-muted border border-border flex items-center justify-center mx-auto text-slate-400 dark:text-slate-500">
                 <Search className="h-6 w-6 text-slate-400 dark:text-slate-500" />
               </div>
@@ -776,8 +1043,8 @@ export const SearchPage: React.FC = () => {
 
           {/* Pagination Controls */}
           {searchResponse && searchResponse.pagination.total_pages > 1 && (
-            <div className="flex items-center justify-between pt-4 border-t border-border">
-              <div className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-border">
+              <div className="text-xs text-slate-500 dark:text-slate-400 font-mono text-center sm:text-left">
                 Page <span className="text-slate-900 dark:text-white font-semibold">{page}</span> of{" "}
                 <span className="text-slate-900 dark:text-white font-semibold">
                   {searchResponse.pagination.total_pages}
@@ -795,7 +1062,8 @@ export const SearchPage: React.FC = () => {
                   <span>Prev</span>
                 </button>
 
-                <div className="flex items-center space-x-1 font-mono text-xs">
+                {/* Numbered Page Buttons for Desktop (hidden on mobile) */}
+                <div className="hidden sm:flex items-center space-x-1 font-mono text-xs">
                   {[...Array(searchResponse.pagination.total_pages)].map((_, i) => {
                     const p = i + 1;
                     if (

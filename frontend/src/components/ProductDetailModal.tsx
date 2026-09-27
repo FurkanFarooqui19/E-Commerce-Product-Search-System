@@ -23,28 +23,28 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-2xl bg-surface-elevated border border-border-strong rounded-xl p-6 shadow-modal overflow-hidden max-h-[90vh] flex flex-col"
+        className="relative w-full max-w-2xl bg-surface-elevated border border-border-strong rounded-xl p-4 sm:p-6 shadow-modal overflow-hidden max-h-[92vh] sm:max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="flex items-start justify-between gap-4 pb-4 border-b border-border">
-          <div>
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-              <span className="text-[11px] font-mono font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-surface border border-border text-slate-700 dark:text-slate-300">
+        <div className="flex items-start justify-between gap-3 sm:gap-4 pb-3 sm:pb-4 border-b border-border">
+          <div className="min-w-0 pr-2">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+              <span className="text-[10px] sm:text-[11px] font-mono font-semibold uppercase tracking-wider px-1.5 sm:px-2 py-0.5 rounded bg-surface border border-border text-slate-700 dark:text-slate-300">
                 {product.brand}
               </span>
-              <span className="text-[11px] font-mono text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded bg-surface border border-border">
+              <span className="text-[10px] sm:text-[11px] font-mono text-slate-600 dark:text-slate-400 px-1.5 sm:px-2 py-0.5 rounded bg-surface border border-border truncate max-w-[150px]">
                 {product.category?.name || "General"}
               </span>
-              <span className="text-[11px] font-mono text-slate-500">
-                Doc ID #{product.id}
+              <span className="text-[10px] sm:text-[11px] font-mono text-slate-500">
+                Doc #{product.id}
               </span>
             </div>
-            <h2 className="text-lg sm:text-xl font-sans font-bold text-slate-900 dark:text-white leading-snug">
+            <h2 className="text-base sm:text-xl font-sans font-bold text-slate-900 dark:text-white leading-snug break-words">
               {product.name}
             </h2>
           </div>
@@ -52,16 +52,16 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
           <button
             onClick={onClose}
             aria-label="Close modal"
-            className="p-1.5 rounded-lg bg-surface border border-border text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:border-slate-400 dark:hover:border-slate-500 transition-colors flex-shrink-0"
+            className="p-1.5 sm:p-2 rounded-lg bg-surface border border-border text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:border-slate-400 dark:hover:border-slate-500 transition-colors flex-shrink-0"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Modal Scrollable Body */}
-        <div className="overflow-y-auto py-4 space-y-4 flex-1 pr-1">
+        <div className="overflow-y-auto py-3 sm:py-4 space-y-3.5 sm:space-y-4 flex-1 pr-1">
           {/* Image & Price Summary */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             {/* Product Image */}
             <div className="h-44 sm:h-auto rounded-lg bg-surface-well border border-border overflow-hidden flex items-center justify-center p-3">
               <img

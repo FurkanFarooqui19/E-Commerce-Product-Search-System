@@ -64,24 +64,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
     >
       <div>
         {/* Top Meta: Rank & Score Gauge */}
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <div className="flex items-center space-x-2">
+        <div className="flex items-center justify-between gap-1.5 sm:gap-2 mb-3">
+          <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
             <span
-              className={`flex items-center justify-center h-5 px-1.5 rounded border text-[11px] font-mono tracking-tight ${getRankBadgeStyle(
+              className={`flex items-center justify-center h-5 px-1.5 rounded border text-[10px] sm:text-[11px] font-mono tracking-tight flex-shrink-0 ${getRankBadgeStyle(
                 rank
               )}`}
             >
               #{rank}
             </span>
-            <span className="text-[11px] font-mono font-medium tracking-wider text-slate-500 dark:text-slate-400 uppercase truncate max-w-[120px]">
+            <span className="text-[10px] sm:text-[11px] font-mono font-medium tracking-wider text-slate-500 dark:text-slate-400 uppercase truncate max-w-[90px] xs:max-w-[120px]">
               {product.brand}
             </span>
           </div>
 
           <div
-            className={`flex items-center space-x-2 px-2 py-0.5 rounded border text-[11px] font-mono ${badge.bg}`}
+            className={`flex items-center space-x-1.5 sm:space-x-2 px-1.5 sm:px-2 py-0.5 rounded border text-[10px] sm:text-[11px] font-mono flex-shrink-0 ${badge.bg}`}
           >
-            <div className={`w-10 h-1.5 ${badge.track} rounded-full overflow-hidden`}>
+            <div className={`w-7 sm:w-10 h-1.5 ${badge.track} rounded-full overflow-hidden`}>
               <div
                 className={`h-full ${badge.bar} rounded-full transition-all`}
                 style={{ width: `${scorePercent}%` }}
@@ -147,11 +147,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
       {/* Card Footer: Price, Rating, Category & Inspect */}
       <div className="pt-3 border-t border-border flex items-center justify-between mt-1">
         <div>
-          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono uppercase tracking-wider flex items-center space-x-1">
-            <Layers className="h-2.5 w-2.5 text-slate-400 dark:text-slate-500" />
-            <span>{product.category?.name || "General"}</span>
+          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono uppercase tracking-wider flex items-center space-x-1 truncate max-w-[110px] xs:max-w-[140px]">
+            <Layers className="h-2.5 w-2.5 text-slate-400 dark:text-slate-500 flex-shrink-0" />
+            <span className="truncate">{product.category?.name || "General"}</span>
           </div>
-          <div className="text-base font-bold text-slate-900 dark:text-white font-display tracking-tight">
+          <div className="text-sm sm:text-base font-bold text-slate-900 dark:text-white font-display tracking-tight">
             ₹{product.price.toLocaleString("en-IN")}
           </div>
         </div>

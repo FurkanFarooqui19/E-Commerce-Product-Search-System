@@ -150,7 +150,7 @@ export const AnalyticsPage: React.FC = () => {
           <span className="text-[11px] font-mono text-slate-500">Pipeline Pipeline</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-2.5 pt-1 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-2.5 pt-1 text-xs">
           {[
             { step: "1. NL Parsing", desc: "Extract price phrases ('under 3000') & category hints via regex rules." },
             { step: "2. Preprocessing", desc: "Lowercase, regex tokenize, domain stopword pruning, Snowball stemming." },
@@ -171,7 +171,7 @@ export const AnalyticsPage: React.FC = () => {
       </div>
 
       {/* Real-time Search Logs Table */}
-      <div className="surface-card p-5 rounded-xl space-y-3">
+      <div className="surface-card p-4 sm:p-5 rounded-xl space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 className="font-sans font-bold text-sm text-slate-900 dark:text-white">
@@ -203,7 +203,7 @@ export const AnalyticsPage: React.FC = () => {
         </div>
 
         <div className="overflow-x-auto rounded-lg border border-border">
-          <table className="w-full text-left text-xs">
+          <table className="w-full text-left text-xs min-w-[620px]">
             <thead className="bg-surface-muted text-slate-500 dark:text-slate-400 font-mono font-medium uppercase tracking-wider border-b border-border">
               <tr>
                 <th className="py-2.5 px-3 font-mono w-16">Log ID</th>

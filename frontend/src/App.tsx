@@ -47,16 +47,16 @@ export function App() {
         </main>
 
         {/* Precision Engineering Footer */}
-        <footer className="w-full border-t border-border bg-surface-muted/90 py-5 text-xs text-slate-500 dark:text-slate-400">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center space-x-2.5">
+        <footer className="w-full border-t border-border bg-surface-muted/90 py-5 mb-14 md:mb-0 text-xs text-slate-500 dark:text-slate-400">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
               <Logo size={20} />
               <span className="font-display font-bold text-slate-800 dark:text-slate-200">SearchForge Engine</span>
-              <span className="text-slate-400 dark:text-slate-600">/</span>
-              <span className="text-slate-500 dark:text-slate-400 font-mono text-[11px]">Classical Information Retrieval IR Core</span>
+              <span className="text-slate-400 dark:text-slate-600 hidden sm:inline">/</span>
+              <span className="text-slate-500 dark:text-slate-400 font-mono text-[11px] block sm:inline">Classical Information Retrieval IR Core</span>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center sm:justify-end gap-3 font-mono text-[11px] text-slate-600 dark:text-slate-400">
+            <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3 font-mono text-[10px] sm:text-[11px] text-slate-600 dark:text-slate-400">
               <span className="px-2 py-0.5 rounded bg-surface border border-border text-slate-700 dark:text-slate-300">
                 BM25 (k₁=1.5, b=0.75)
               </span>
@@ -70,7 +70,7 @@ export function App() {
                 href={RAW_HOST ? `${RAW_HOST}/docs` : "/docs"}
                 target="_blank"
                 rel="noreferrer"
-                className="text-primary hover:text-primary-hover flex items-center space-x-1 transition-colors ml-1"
+                className="text-primary hover:text-primary-hover flex items-center space-x-1 transition-colors ml-0.5 sm:ml-1"
               >
                 <BookOpen className="h-3.5 w-3.5" />
                 <span>OpenAPI Docs</span>

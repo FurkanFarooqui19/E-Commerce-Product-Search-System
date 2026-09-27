@@ -184,7 +184,7 @@ export const EvaluationPage: React.FC = () => {
         <button
           onClick={executeBenchmark}
           disabled={loading}
-          className="px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-white font-medium text-xs flex items-center space-x-2 transition-colors self-start md:self-auto disabled:opacity-50 flex-shrink-0"
+          className="w-full md:w-auto px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-white font-medium text-xs flex items-center justify-center space-x-2 transition-colors flex-shrink-0"
         >
           <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
           <span>{loading ? "Benchmarking..." : "Run 30-Query Benchmark"}</span>
@@ -314,10 +314,10 @@ export const EvaluationPage: React.FC = () => {
           </div>
 
           {/* Chart Display Area */}
-          <div className="h-80 w-full pt-1">
+          <div className="h-72 sm:h-80 w-full pt-1">
             <ResponsiveContainer width="100%" height="100%">
               {chartMode === "radar" ? (
-                <RadarChart cx="50%" cy="50%" outerRadius="75%" data={radarChartData}>
+                <RadarChart cx="50%" cy="50%" outerRadius="62%" data={radarChartData}>
                   <PolarGrid stroke={gridStroke} />
                   <PolarAngleAxis
                     dataKey="dimension"
@@ -494,7 +494,7 @@ export const EvaluationPage: React.FC = () => {
           </div>
 
           <div className="overflow-x-auto rounded-lg border border-border">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-xs min-w-[580px]">
               <thead className="bg-surface-muted text-slate-500 dark:text-slate-400 font-mono font-medium uppercase tracking-wider border-b border-border">
                 <tr>
                   <th className="py-2.5 px-3 w-10">#</th>
